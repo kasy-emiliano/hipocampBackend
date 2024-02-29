@@ -23,6 +23,7 @@ F:\Backup\hipocampBackend\src\main\java\com\example\elearning\generic\GenericDAO
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\config\StaticResourceConfiguration.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\controller\NoteController.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\Voir.java
+F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\Customer.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\DetailsFormation.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\inscritFormation.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\controller\PubliciteController.java
@@ -41,6 +42,7 @@ F:\Backup\hipocampBackend\src\main\java\com\example\elearning\controller\SocketC
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\controller\ValeurNoteController.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\Statistique.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\Status.java
+F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\CustomerController.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\ReponseQuiz.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\Admin.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\Commentaire.java
