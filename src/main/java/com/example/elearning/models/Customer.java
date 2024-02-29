@@ -1,3 +1,6 @@
+package com.example.elearning.models;
+
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
