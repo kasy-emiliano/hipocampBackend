@@ -11,18 +11,13 @@ import java.util.Date;
 public class FonctionBase {
 
     public static Connection connect() throws Exception {
-       Connection con = null;
-        try {
-            Class.forName("org.postgresql.Driver");
-            con = (Connection) DriverManager.getConnection("jdbc:postgresql://viaduct.proxy.rlwy.net:15614/railway", "postgres", "eaDeaAbcGb6dFF4F61-A5c6E6Eg4ccCe");
-           con.setAutoCommit(true);
-            System.out.println("Connectee ahn");
+        String url = "jdbc:postgresql://viaduct.proxy.rlwy.net:15614/railway?user=postgres&password=eaDeaAbcGb6dFF4F61-A5c6E6Eg4ccCe&charSet=UTF-8";
 
-        } catch (Exception e) {
-            System.out.println(e);
-            System.out.println("Tsy mety mi-connecte❌");
-        }
-        return con;
+        Connection connection;
+        connection = DriverManager.getConnection(url);
+        connection.setAutoCommit(true);
+        System.out.println("Connectee");
+        return connection;
     }
 
  public static void closeConnection(Connection connection) throws Exception {

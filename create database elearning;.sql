@@ -211,7 +211,7 @@ CREATE TABLE IF NOT EXISTS public.Formateur
     foreign key (modeDexercice) references modeDexercice(idmodeDexercice)
 );
 
-insert into Formateur(nom,Prenom,email,mdp,NomOrgannisme,ville,civilite,Profession,modeDexercice,bio,numero,datenaissance,facebook,linkedin,token,etatCompte,Pdp,dateDajout)values('Kasy','Emiliano','kasy@gmail.com','kasy','Kaiamba','Tamatave',2,10,1,'Professeur Kasy','0343212321','02-05-1996','Kasy Jr','KasyJr','def',1,'sary.jpg','16-01-2024');
+insert into Formateur(nom,Prenom,email,mdp,NomOrgannisme,ville,civilite,Profession,modeDexercice,bio,numero,datenaissance,facebook,linkedin,token,etatCompte,Pdp,dateDajout)values('Kasy','Emiliano','kasy@gmail.com','kasy','Kaiamba','Tamatave',2,10,1,'Professeur Kasy','0343212321','2024-01-16','Kasy Jr','KasyJr','def',1,'sary.jpg','2024-01-16');
 
 CREATE TABLE IF NOT EXISTS public.unite
 (
@@ -531,10 +531,13 @@ lien varchar
 
     INSERT INTO publicite (NomOrganisme, sary, email, contact, dateDebut, dateFin, duree, montantParJours,titre,resumer,lien)
     VALUES 
-    ('Google', 'image3.jpg', 'contact@google.com', '+1357924680', '2024-02-15 12:00:00', '2024-02-22 12:00:00', 7, 55.00,'sélo ou duo','une maniere de voir les choses entre deux ou tout seul','https://www.star.mg/historique');
+    ('Google', 'mm.PNG', 'contact@google.com', '+1357924680', '2024-03-04 12:00:00', '2024-03-06 12:00:00', 7, 55.00,'sélo ou duo','une maniere de voir les choses entre deux ou tout seul','https://www.star.mg/historique');
 
         ('Samsung', 'image2.jpg', 'contact@samsung.com', '+1987654321', '2024-02-15 12:00:00', '2024-02-17 12:00:00', 7, 45.00,'music ou rien','music fort,une sentiment de comment aimer la music','https://www.star.mg/historique');
     ('Apple', 'image1.jpg', 'contact@apple.com', '+1234567890', '2024-02-14 12:00:00', '2024-02-17 12:00:00', 7, 50.00,'la viéé des etudiants','les etudiants sont comme les gens normal blablabla ','https://invivox.com/fr'),
 
 
 
+    INSERT INTO publicite (NomOrganisme, sary, email, contact, dateDebut, dateFin, duree, montantParJours,titre,resumer,lien)
+    VALUES 
+    ('Google', 'uploads/mm.PNG', 'contact@google.com', '+1357924680', '2024-03-04 12:00:00', '2024-03-06 12:00:00', 7, 55.00,'sélo ou duo','une maniere de voir les choses entre deux ou tout seul','https://www.star.mg/historique');
