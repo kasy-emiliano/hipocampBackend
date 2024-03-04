@@ -45,7 +45,7 @@ public class EmailService {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Activation de compte");
-            String activationLink = "http://"+InetAddress.getLocalHost().getHostAddress()+":8080/activation?token=" + activationToken;
+            String activationLink = "https://hipocampbackend-5.onrender.com/activation?token=" + activationToken;
             message.setText("Cliquez sur ce lien pour activer votre compte : " + activationLink);
             Transport.send(message);
 
@@ -86,7 +86,7 @@ public class EmailService {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Activation de compte");
-            String activationLink = "http://"+InetAddress.getLocalHost().getHostAddress()+":8080/activationF?token=" + activationToken;
+            String activationLink = "https://hipocampbackend-5.onrender.com/activationF?token=" + activationToken;
             message.setText("Cliquez sur ce lien pour activer votre compte : " + activationLink);
             Transport.send(message);
 
@@ -131,7 +131,7 @@ public class EmailService {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Modifier mot de passe");
-            String activationLink = "http://localhost:3000/PasswordReset?token=" + activationToken;
+            String activationLink = "https://hipocampbackend-5.onrender.com/PasswordReset?token=" + activationToken;
             message.setText("Cliquez sur ce lien pour changer le mot de passe votre compte : " + activationLink);
             Transport.send(message);
 
@@ -174,7 +174,7 @@ public class EmailService {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Modifier mot de passe");
-            String activationLink = "http://localhost:3000/PasswordResetForm?token=" + activationToken;
+            String activationLink = "https://hipocampbackend-5.onrender.com/PasswordResetForm?token=" + activationToken;
             message.setText("Cliquez sur ce lien pour changer le mot de passe votre compte : " + activationLink);
             Transport.send(message);
 
@@ -254,7 +254,7 @@ public class EmailService {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(d.getEmail()));
             message.setSubject("Lien de creation du compte");
-            String activationLink = "http://localhost:3000/InfoFormateur?token=" + d.getToken();
+            String activationLink = "https://hipocampbackend-5.onrender.com/InfoFormateur?token=" + d.getToken();
             message.setText("Cliquez sur ce lien pour creer votre compte : " + activationLink);
             Transport.send(message);
 
