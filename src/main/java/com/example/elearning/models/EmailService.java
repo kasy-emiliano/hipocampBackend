@@ -51,7 +51,7 @@ public class EmailService {
 
             System.out.println("E-mail envoyé avec succès!");
 
-        } catch (MessagingException | UnknownHostException e) {
+        } catch (MessagingException e) {
             e.printStackTrace();
         }
     }
@@ -92,7 +92,7 @@ public class EmailService {
 
             System.out.println("E-mail envoyé avec succès!");
 
-        } catch (MessagingException | UnknownHostException e) {
+        } catch (MessagingException e) {
             e.printStackTrace();
         }
     }
