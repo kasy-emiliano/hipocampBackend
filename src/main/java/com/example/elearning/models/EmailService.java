@@ -131,7 +131,7 @@ public class EmailService {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Modifier mot de passe");
-            String activationLink = "https://hipocampbackend-5.onrender.com/PasswordReset?token=" + activationToken;
+            String activationLink = "https://deft-tanuki-0f69a6.netlify.app/PasswordReset?token=" + activationToken;
             message.setText("Cliquez sur ce lien pour changer le mot de passe votre compte : " + activationLink);
             Transport.send(message);
 
@@ -174,7 +174,7 @@ public class EmailService {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Modifier mot de passe");
-            String activationLink = "https://hipocampbackend-5.onrender.com/PasswordResetForm?token=" + activationToken;
+            String activationLink = "https://deft-tanuki-0f69a6.netlify.app/PasswordResetForm?token=" + activationToken;
             message.setText("Cliquez sur ce lien pour changer le mot de passe votre compte : " + activationLink);
             Transport.send(message);
 
