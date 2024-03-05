@@ -254,7 +254,7 @@ public class EmailService {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(d.getEmail()));
             message.setSubject("Lien de creation du compte");
-            String activationLink = "https://hipocampbackend-5.onrender.com/InfoFormateur?token=" + d.getToken();
+            String activationLink = "https://deft-tanuki-0f69a6.netlify.app/InfoFormateur?token=" + d.getToken();
             message.setText("Cliquez sur ce lien pour creer votre compte : " + activationLink);
             Transport.send(message);
 
