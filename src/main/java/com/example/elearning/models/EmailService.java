@@ -45,7 +45,7 @@ public class EmailService {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Activation de compte");
-            String activationLink = "https://deft-tanuki-0f69a6.netlify.app/activation?token=" + activationToken;
+            String activationLink = "https://hipocampbackend-5.onrender.com/activation?token=" + activationToken;
             message.setText("Cliquez sur ce lien pour activer votre compte : " + activationLink);
             Transport.send(message);
 
@@ -86,7 +86,7 @@ public class EmailService {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Activation de compte");
-            String activationLink = "https://deft-tanuki-0f69a6.netlify.app/activationF?token=" + activationToken;
+            String activationLink = "https://hipocampbackend-5.onrender.com/activationF?token=" + activationToken;
             message.setText("Cliquez sur ce lien pour activer votre compte : " + activationLink);
             Transport.send(message);
 
@@ -131,7 +131,7 @@ public class EmailService {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Modifier mot de passe");
-            String activationLink = "https://deft-tanuki-0f69a6.netlify.app/PasswordReset?token=" + activationToken;
+            String activationLink = "https://meddochippocamp.netlify.app/PasswordReset?token=" + activationToken;
             message.setText("Cliquez sur ce lien pour changer le mot de passe votre compte : " + activationLink);
             Transport.send(message);
 
@@ -174,7 +174,7 @@ public class EmailService {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Modifier mot de passe");
-            String activationLink = "https://deft-tanuki-0f69a6.netlify.app/PasswordResetForm?token=" + activationToken;
+            String activationLink = "https://meddochippocamp.netlify.app/PasswordResetForm?token=" + activationToken;
             message.setText("Cliquez sur ce lien pour changer le mot de passe votre compte : " + activationLink);
             Transport.send(message);
 
@@ -254,7 +254,7 @@ public class EmailService {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(d.getEmail()));
             message.setSubject("Lien de creation du compte");
-            String activationLink = "https://deft-tanuki-0f69a6.netlify.app/InfoFormateur?token=" + d.getToken();
+            String activationLink = "https://meddochippocamp.netlify.app/InfoFormateur?token=" + d.getToken();
             message.setText("Cliquez sur ce lien pour creer votre compte : " + activationLink);
             Transport.send(message);
 
