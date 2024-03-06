@@ -45,7 +45,7 @@ public class EmailService {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Activation de compte");
-            String activationLink = "https://hipocampbackend-5.onrender.com/activation?token=" + activationToken;
+            String activationLink = "https://deft-tanuki-0f69a6.netlify.app/activation?token=" + activationToken;
             message.setText("Cliquez sur ce lien pour activer votre compte : " + activationLink);
             Transport.send(message);
 
@@ -86,7 +86,7 @@ public class EmailService {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Activation de compte");
-            String activationLink = "https://hipocampbackend-5.onrender.com/activationF?token=" + activationToken;
+            String activationLink = "https://deft-tanuki-0f69a6.netlify.app/activationF?token=" + activationToken;
             message.setText("Cliquez sur ce lien pour activer votre compte : " + activationLink);
             Transport.send(message);
 
