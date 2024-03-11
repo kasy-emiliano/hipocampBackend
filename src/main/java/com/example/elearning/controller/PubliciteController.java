@@ -1,5 +1,7 @@
 package com.example.elearning.controller;
 
+import com.example.elearning.Res;
+import com.example.elearning.Service;
 import com.example.elearning.generic.GenericDAO;
 import com.example.elearning.models.*;
 import org.springframework.http.HttpStatus;
@@ -13,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.GeneralSecurityException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -27,15 +31,26 @@ import java.util.Base64;
 import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @CrossOrigin
 @Controller
 public class PubliciteController {
+@Autowired
+    private Service service;
 
     @PostMapping("/AjoutPublicite")
-    public ResponseEntity<String> AjoutPublicite(HttpServletRequest request,
-            HttpServletResponse response, @RequestParam("sary") MultipartFile file) throws Exception {
+    public Object handleFileUpload(@RequestParam("image") MultipartFile file,HttpServletRequest request,
+            HttpServletResponse response) throws IOException, GeneralSecurityException, Exception {
+        if (file.isEmpty()) {
+        return "File is empty";
+    }
+        
+        String imageUrl = service.uploadImageToDrive(file);
+    System.out.println("Uploaded image URL: " + imageUrl);
 
+    Publicite pub=new Publicite();
+    
         DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         String dateDebutString = request.getParameter("datedebut");
         String dateFinString = request.getParameter("datefin");
@@ -54,43 +69,18 @@ public class PubliciteController {
         String lien = request.getParameter("lien");
         int Duree = Integer.parseInt(dureeS);
         double montantParJours = Double.parseDouble(request.getParameter("montantParJours"));
-
-        String UPLOAD_DIR = "uploads/";
-        String sary="";
-        
-        try {
-            // Vérifiez si le répertoire de stockage existe, sinon, créez-le
-            File uploadDir = new File(UPLOAD_DIR);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdirs();
-            }
-
-            // Récupérez le nom du fichier téléchargé
-            String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-
-            // Construisez le chemin complet de stockage
-             sary = UPLOAD_DIR + fileName;
-
-            // Copiez le fichier dans le répertoire de stockage
-            Path targetLocation = Paths.get(sary);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors du téléchargement de l'image : " + e.getMessage());
-        }
-        
-        Publicite com = new Publicite();
-        
+  
         if (dateFin.isBefore(dateDebut)) {
  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'apprenant a déjà voté pour cette formation.");
 } else {
 
-        com.insertPublicite2(nomOrganisme, sary, lien, email, contact, datedebut, datefin, Duree, titre, montantParJours, resumer);
+         pub.insertPublicite2(nomOrganisme,imageUrl, lien, email, contact, datedebut, datefin, Duree, titre, montantParJours, resumer);
        
 }
 
-        
-        return ResponseEntity.ok("ok");
-    }
+
+    return "Image successfully uploaded and link inserted into database.";
+}
 
     @GetMapping ("/LesPublicite")
     public ResponseEntity<ArrayList<Publicite>> LesPublicite() throws Exception {

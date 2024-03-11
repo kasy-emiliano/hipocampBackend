@@ -48,7 +48,27 @@ public class Publicite {
     private double montantParJours;
     @Attr
     private String resumer;
+    
+    private int status;
+    
+    private String message;
 
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+    
     public int getIdPublicite() {
         return idPublicite;
     }
@@ -180,7 +200,7 @@ public class Publicite {
     try {
         FonctionBase connect= new FonctionBase();
         connection = connect.connect();
-        String query = "insert into Publicite(NomOrganisme,sary, lien, email, contact, dateDebut, dateFin, duree, titre, montantParJours, resumer) values (?, ?, ?,?,?,?,?,?,?,?,?)";
+        String query = "insert into Publicite(NomOrganisme,sary, lien, email, contact, dateDebut, dateFin, duree, titre, montantParJours, resumer) values (?,?, ?,?,?,?,?,?,?,?,?)";
         
        
         statement = connection.prepareStatement(query);

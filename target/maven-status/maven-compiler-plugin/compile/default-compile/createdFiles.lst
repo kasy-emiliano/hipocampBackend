@@ -17,6 +17,7 @@ com\example\elearning\models\FonctionBase.class
 com\example\elearning\models\DetailsFormation.class
 com\example\elearning\models\Statistique.class
 com\example\elearning\controller\ActivationController.class
+com\example\elearning\GlobalCorsConfig$1.class
 com\example\elearning\models\Publicite.class
 com\example\elearning\models\Details.class
 com\example\elearning\models\Quiz.class
@@ -46,6 +47,7 @@ com\example\elearning\controller\FileUploadConfig.class
 com\example\elearning\models\A.class
 com\example\elearning\models\EmailService$6.class
 com\example\elearning\models\FormationCommentaire.class
+com\example\elearning\Res.class
 com\example\elearning\models\Voir.class
 com\example\elearning\models\Pdp.class
 com\example\elearning\models\ActivationTokenGenerator.class
@@ -63,6 +65,7 @@ com\example\elearning\controller\AdminController.class
 com\example\elearning\controller\HelloController.class
 com\example\elearning\models\modeDexercice.class
 com\example\elearning\config\StaticResourceConfiguration.class
+com\example\elearning\GlobalCorsConfig.class
 com\example\elearning\models\CorsConfig.class
 com\example\elearning\models\Profession.class
 com\example\elearning\models\Admin.class
@@ -90,6 +93,7 @@ com\example\elearning\models\PasswordResetToken.class
 com\example\elearning\controller\ApprenantController.class
 com\example\elearning\models\mouvementChapitres.class
 com\example\elearning\controller\ChapitresController.class
+com\example\elearning\Service.class
 com\example\elearning\controller\PubliciteController.class
 com\example\elearning\models\Mois.class
 com\example\elearning\generic\GenericDAO.class

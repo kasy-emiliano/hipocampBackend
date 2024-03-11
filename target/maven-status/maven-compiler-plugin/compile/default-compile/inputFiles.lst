@@ -2,6 +2,7 @@ F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\Annee.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\FormationReponseCommentaire.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\generic\ClassAnotation.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\mouvementQuiz.java
+F:\Backup\hipocampBackend\src\main\java\com\example\elearning\Service.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\Langues.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\Formation.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\generic\Attr.java
@@ -23,6 +24,7 @@ F:\Backup\hipocampBackend\src\main\java\com\example\elearning\generic\GenericDAO
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\config\StaticResourceConfiguration.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\controller\NoteController.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\Voir.java
+F:\Backup\hipocampBackend\src\main\java\com\example\elearning\Res.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\Customer.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\DetailsFormation.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\inscritFormation.java
@@ -30,6 +32,7 @@ F:\Backup\hipocampBackend\src\main\java\com\example\elearning\controller\Publici
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\civilite.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\ContenuSousChapitres.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\controller\HelloController.java
+F:\Backup\hipocampBackend\src\main\java\com\example\elearning\GlobalCorsConfig.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\modeDexercice.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\models\Profession.java
 F:\Backup\hipocampBackend\src\main\java\com\example\elearning\controller\CategorieController.java
