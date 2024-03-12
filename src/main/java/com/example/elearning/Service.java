@@ -33,7 +33,6 @@ public class Service {
     }
 
    public String uploadImageToDrive(MultipartFile file) throws GeneralSecurityException, IOException {
-    Publicite res = new Publicite();
    
     try {
         String folderId = "1hyptoJce-ZuyOVTA6yH8LwwM6htvqE8c";
@@ -49,8 +48,6 @@ public class Service {
 
     } catch (Exception e) {
         System.out.println(e.getMessage());
-        res.setStatus(500);
-        res.setMessage(e.getMessage());
          System.out.println("Error uploading image to Google Drive: " + e.getMessage());
          throw e;
     }
