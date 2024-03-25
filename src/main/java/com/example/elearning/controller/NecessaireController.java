@@ -26,7 +26,7 @@ public class NecessaireController {
 
         userDetails.setAllprofession(FonctionBase.AllProfession());
 
-        System.out.println(userDetails.getAllprofession().get(0).getNom());
+        //System.out.println(userDetails.getAllprofession().get(0).getNom());
         userDetails.setAllmodeDexercice(FonctionBase.AllmodeDexercice());
 
 

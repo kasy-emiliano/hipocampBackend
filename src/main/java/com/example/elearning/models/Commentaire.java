@@ -138,12 +138,7 @@ public class Commentaire {
     }
     
 
-    public void insertCommentaire1(Commentaire art) throws Exception {
-        GenericDAO.save(new Commentaire(idFormation, idApprenant, commentaire), new FonctionBase().connect());
-    }
-
-  
-      public void insertCommentaireFormateur(int idFormation, int idApprenant, String commentaire) throws Exception {
+       public void insertCommentaire1(int idFormation, int idApprenant, String commentaire) throws Exception {
     Connection connection = null;
     PreparedStatement statement = null;
     try {
@@ -155,6 +150,33 @@ public class Commentaire {
         statement = connection.prepareStatement(query);
         statement.setInt(1, idFormation);
         statement.setInt(2, idApprenant);
+        statement.setString(3, commentaire);
+        statement.executeUpdate();
+    } catch (Exception e) {
+        throw e;
+    } finally {
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
+    }
+}
+   
+  
+      public void insertCommentaireFormateur(int idFormation, int idFormateur, String commentaire) throws Exception {
+    Connection connection = null;
+    PreparedStatement statement = null;
+    try {
+         FonctionBase connect= new FonctionBase();
+        connection = connect.connect();
+        String query = "insert into commentaire(idFormation, idformateur, commentaire) values (?, ?, ?)";
+        
+        connection.createStatement().execute("SET NAMES 'UTF8'"); // Pour PostgreSQL
+        statement = connection.prepareStatement(query);
+        statement.setInt(1, idFormation);
+        statement.setInt(2, idFormateur);
         statement.setString(3, commentaire);
         statement.executeUpdate();
     } catch (Exception e) {
@@ -195,6 +217,9 @@ public class Commentaire {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            statement.close();
+            connection.close();
         }
         return info;
 

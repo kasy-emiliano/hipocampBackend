@@ -1,10 +1,15 @@
 package com.example.elearning.models;
  
 import com.example.elearning.generic.Attr;
+import com.example.elearning.generic.ClassAnotation;
 import com.example.elearning.generic.GenericDAO;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -43,7 +48,7 @@ public class Publicite {
     private double montantParJours;
     @Attr
     private String resumer;
-     
+
     public int getIdPublicite() {
         return idPublicite;
     }
@@ -91,6 +96,8 @@ public class Publicite {
     public void setContact(String contact) {
         this.contact = contact;
     }
+
+    
 
     public int getDuree() {
         return duree;
@@ -173,7 +180,7 @@ public class Publicite {
     try {
         FonctionBase connect= new FonctionBase();
         connection = connect.connect();
-        String query = "insert into Publicite(NomOrganisme,sary, lien, email, contact, dateDebut, dateFin, duree, titre, montantParJours, resumer) values (?,?, ?,?,?,?,?,?,?,?,?)";
+        String query = "insert into Publicite(NomOrganisme,sary, lien, email, contact, dateDebut, dateFin, duree, titre, montantParJours, resumer) values (?, ?, ?,?,?,?,?,?,?,?,?)";
         
        
         statement = connection.prepareStatement(query);

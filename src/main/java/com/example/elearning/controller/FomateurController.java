@@ -138,8 +138,8 @@ System.out.println("efefwwfe");
       // Rediriger vers une page de confirmation
     }
 
-    @PostMapping  ("/ModifPhotoCouverture")
-    public ResponseEntity<String> ModifPhotoCouverture( @RequestParam("token") String token, @RequestParam("photo") MultipartFile file, Model model) throws Exception {
+    @PostMapping  ("/ModifPhotoProfil")
+    public ResponseEntity<String> ModifPhotoProfil( @RequestParam("token") String token, @RequestParam("photo") MultipartFile file, Model model) throws Exception {
         // Générer un token d'activation
 
 
@@ -149,7 +149,7 @@ System.out.println("oayyy ");
 
         //upload image
 
-        String UPLOAD_DIR = "../Compressed\\TAIL\\tailwi\\src\\PdpFormateur/";
+        String UPLOAD_DIR = "uploads/";
         String filePath="";
          try {
             // Vérifiez si le répertoire de stockage existe, sinon, créez-le
@@ -162,7 +162,7 @@ System.out.println("oayyy ");
             String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 
             // Construisez le chemin complet de stockage
-             filePath = "PdpFormateur/"+ fileName;
+             filePath = UPLOAD_DIR + fileName;
 
             // Copiez le fichier dans le répertoire de stockage
             Path targetLocation = Paths.get(filePath);
@@ -172,16 +172,6 @@ System.out.println("oayyy ");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors du téléchargement de l'image : " + e.getMessage());
         }
-
-
-
-
-
-
-
-
-
-
 
             F=FonctionBase.selectWithTokenF(token);
 
@@ -198,26 +188,59 @@ F.modifphoto(F.getToken(),filePath);
 
         }
 
-
-
-
-
         // Rediriger vers une page de confirmation
 
 
+    @PostMapping  ("/ModifPhotoCouverture")
+    public ResponseEntity<String> ModifPhotoCouverture( @RequestParam("token") String token, @RequestParam("photo") MultipartFile file, Model model) throws Exception {
+        // Générer un token d'activation
+        Formateur F = null;
+System.out.println("oayyy ");
+
+        //upload image
+
+        String UPLOAD_DIR = "uploads/";
+        String filePath="";
+         try {
+            // Vérifiez si le répertoire de stockage existe, sinon, créez-le
+            File uploadDir = new File(UPLOAD_DIR);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+
+            // Récupérez le nom du fichier téléchargé
+            String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+
+            // Construisez le chemin complet de stockage
+             filePath = UPLOAD_DIR + fileName;
+
+            // Copiez le fichier dans le répertoire de stockage
+            Path targetLocation = Paths.get(filePath);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
 
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors du téléchargement de l'image : " + e.getMessage());
+        }
 
+            F=FonctionBase.selectWithTokenF(token);
 
+            if(F==null){
 
+                return ResponseEntity.badRequest().body("tsy azo");
+            }
 
+            else {
+F.modifphotoCouverture(F.getToken(),filePath);
+                return  ResponseEntity.ok("token");
+            }
+            // Gérer le cas où le token est invalide ou expiré
 
+        }
 
+        // Rediriger vers une page de confirmation
 
-
-
-
-
+    
 
     @PostMapping("/DemandeAdhesion")
     public ResponseEntity<String> DemandeAdhesion(@RequestParam("nom") String nom, @RequestParam("prenom") String prenom, @RequestParam("email") String email, @RequestParam("organisme") String organisme, @RequestParam("ville") String ville, @RequestParam("objet") String objet, @RequestParam("message") String message, @RequestParam("numero") String numero, Model model) throws Exception {
@@ -288,6 +311,21 @@ rep.EnvoyerLien(Integer.parseInt(idDemande));
         // Supposons que vous ayez une classe UserDetails qui représente les détails de l'utilisateur
         System.out.println("aaaaaaaa");
         Formateur userDetails = FonctionBase.selectWithTokenFConnecter(token);
+        if(userDetails==null) {
+            // Ajoutez d'autres détails de l'utilisateur
+            System.out.println("kjj");
+            return ResponseEntity.badRequest().body(userDetails);
+        }
+        System.out.println("k");
+        return ResponseEntity.ok(userDetails);
+    }
+    
+    
+    @GetMapping("/InfoFormateurPhoto")
+    public ResponseEntity<Formateur>InfoFormateurPhoto(@RequestParam("token") String token) throws Exception {
+        // Supposons que vous ayez une classe UserDetails qui représente les détails de l'utilisateur
+        
+        Formateur userDetails = new Formateur().SelectProfilCouverture(token);
         if(userDetails==null) {
             // Ajoutez d'autres détails de l'utilisateur
             System.out.println("kjj");

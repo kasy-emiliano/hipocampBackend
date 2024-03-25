@@ -120,9 +120,30 @@ public class ReponseCommentaire {
     public ReponseCommentaire() {
     }
 
-    public void insertReponseCommentaireApprenant(ReponseCommentaire art) throws Exception {
-        GenericDAO.save(new ReponseCommentaire(idCommentaire, idApprenant, reponsecommentaire),  new FonctionBase().connect());
+    public void insertReponseCommentaireApprenant(int idCommentaire, int idapprenant, String reponsecommentaire) throws Exception {
+    Connection connection = null;
+    PreparedStatement statement = null;
+    try {
+       FonctionBase connect= new FonctionBase();
+        connection = connect.connect();
+        String query = "insert into ReponseCommentaire(idCommentaire, idApprenant, reponsecommentaire) values (?, ?, ?)";
+       
+        statement = connection.prepareStatement(query);
+        statement.setInt(1, idCommentaire);
+        statement.setInt(2, idapprenant);
+        statement.setString(3, reponsecommentaire);
+        statement.executeUpdate();
+    } catch (Exception e) {
+        throw e;
+    } finally {
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
     }
+}
     
     public ArrayList<ReponseCommentaire> ReponseCommentaireApprenant(int idFormation) throws Exception {
         ArrayList<ReponseCommentaire> listeEmp = GenericDAO.findBySql(new ReponseCommentaire(), "select * from FormationCommentaireApprenant where idFormation="+idFormation, new FonctionBase().connect());

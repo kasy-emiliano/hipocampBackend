@@ -205,6 +205,7 @@ CREATE TABLE IF NOT EXISTS public.Formateur
     token varchar,
     etatCompte int,
     Pdp varchar,
+    Pdc varchar,
     dateDajout date,
     foreign key (civilite) references civilite(idcivilite),
     foreign key (Profession) references Profession(idProfession),
@@ -541,3 +542,54 @@ lien varchar
     INSERT INTO publicite (NomOrganisme, sary, email, contact, dateDebut, dateFin, duree, montantParJours,titre,resumer,lien)
     VALUES 
     ('Google', 'uploads/mm.PNG', 'contact@google.com', '+1357924680', '2024-03-04 12:00:00', '2024-03-06 12:00:00', 7, 55.00,'sélo ou duo','une maniere de voir les choses entre deux ou tout seul','https://www.star.mg/historique');
+
+
+CREATE VIEW InfoFormateur AS
+SELECT
+    f.idFormateur, 
+    f.Nom, 
+    f.Prenom, 
+    f.email, 
+    f.mdp, 
+    f.NomOrgannisme, 
+    f.ville, 
+    c.nom AS civilite_nom, 
+    p.nom AS profession_nom, 
+    f.modeDexercice, 
+    f.bio, 
+    f.numero, 
+    f.datenaissance, 
+    f.facebook, 
+    f.linkedin, 
+    f.token, 
+    f.etatCompte, 
+    f.Pdp, 
+    f.Pdc, 
+    f.dateDajout 
+FROM 
+    Formateur f 
+    LEFT JOIN civilite c ON f.civilite = c.idcivilite 
+    LEFT JOIN Profession p ON f.Profession = p.idProfession;
+
+Select * from formation  join categorie on formation.idcategorie=categorie.idcategorie join typesacces on formation.typesacces=typesacces.idTypesAcces join langues on formation.langues=langues.idLangues join unite on formation.unite=unite.idUnite Where formation.etat=2
+
+
+CREATE TABLE IF NOT EXISTS public.DeleteCategorie
+(
+
+    idDeleteCategorie serial primary key,
+    idCategorie integer,
+  foreign key (idCategorie) references Categorie(idCategorie)
+);
+
+CREATE VIEW MesFormation AS
+
+select
+idformation,
+idformateur,
+idcategorie,
+typesacces,langues,titre,duree,unite,resumer,pdc,token,etat,prix,datedajout,devalidation,dedemande
+ from formation join categorie on formation.idcategorie=categorie.idcategorie join typesacces on formation.typesacces=typesacces.idTypesAcces join langues on formation.langues=langues.idLangues join unite on formation.unite=unite.idUnite;
+
+ idformation | idformateur | idcategorie | typesacces | langues |                                                 titre                                                  | duree | unite |                                                    resumer                                                    |                     pdc                      |                    token                    | etat | prix | datedajout | devalidation | dedemande
+ 

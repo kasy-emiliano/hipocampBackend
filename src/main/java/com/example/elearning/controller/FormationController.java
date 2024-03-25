@@ -196,18 +196,6 @@ Moi rep=new Moi(M,F);
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     @GetMapping ("/demandevalidation")
     public ResponseEntity<String> demandevalidation(@RequestParam("idFormation") String idFormation  ) throws Exception {
 
@@ -230,11 +218,11 @@ Moi rep=new Moi(M,F);
     @GetMapping ("/SuivreFormation")
     public ResponseEntity<String> SuivreFormation(@RequestParam("idFormation") String idFormation,@RequestParam("token") String token  ) throws Exception {
 
-
         Apprenant A=FonctionBase.selectWithTokenConnecter(token);
         Formation rep=FonctionBase.MonFormation(Integer.parseInt(idFormation));
-
-
+        int S= 0;
+        mouvementChapitres m=new mouvementChapitres();
+System.out.println("lelee");
 int idApprenant=A.getIdApprenant();
 inscritFormation ins=FonctionBase.Suivie(idApprenant,Integer.parseInt(idFormation));
 
@@ -249,6 +237,9 @@ else {
 
     if(rep.getTypesAcces()==1){
 inss.insererWithid(idApprenant,Integer.parseInt(idFormation));
+        S = FonctionBase.voalohany(Integer.parseInt(idFormation));
+        m = new mouvementChapitres();
+        m.inserer(A.getIdApprenant(), Integer.parseInt(idFormation), S);
 System.out.println("gratos");
         return  ResponseEntity.ok("ao");
     }

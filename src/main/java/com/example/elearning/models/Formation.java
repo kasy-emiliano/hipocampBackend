@@ -134,12 +134,12 @@ public class Formation {
 this.devalidation=c;
          this.dateDajout=d;
         this.dedemande=e;
-        System.out.println("iooooo:"+this.dateDajout);
+        //System.out.println("iooooo:"+this.dateDajout);
          this.monFormateur=FonctionBase.moi(idFormateur);
 
         ArrayList<Apprenant>rep=FonctionBase.ListApprenantI(idFormation);
         this.totalEleve=rep.size();
-        System.out.println("tsssss:"+this.totalEleve);
+        //System.out.println("tsssss:"+this.totalEleve);
     }
 
 

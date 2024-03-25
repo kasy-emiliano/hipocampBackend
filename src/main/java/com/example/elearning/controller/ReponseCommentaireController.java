@@ -48,10 +48,9 @@ public class ReponseCommentaireController {
                     System.out.println("Apprenant Nom: " + userDetails.getPrenom());
                     int idApprenant = userDetails.getIdApprenant();
 
-                    com.setIdCommentaire(idCommentaire);
-                    com.setIdApprenant(idApprenant);
-                    com.setReponsecommentaire(reponsecommentaire);
-                    com.insertReponseCommentaireApprenant(com);
+                    
+                    
+                    com.insertReponseCommentaireApprenant(idCommentaire, idApprenant, reponsecommentaire);
 
                     return ResponseEntity.ok("ReponseCommentaire ajouté avec succès");
 
