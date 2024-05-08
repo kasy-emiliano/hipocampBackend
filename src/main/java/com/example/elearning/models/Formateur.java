@@ -6,9 +6,11 @@ import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Formateur {
@@ -34,6 +36,89 @@ public class Formateur {
     private String pdp;
     private String pdc;
     private String profession_nom;
+    private String phraseCertificat;
+    private String nomespace;
+
+        private String logo;
+    private String couleurPrincipale;
+    private String couleurArrierePlan ;
+    private String CouleurTitre ;
+    private String couleurText ;
+    private String couleurBouton ;
+    private String couleurtextBouton ; 
+    
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
+    }
+
+    public String getCouleurPrincipale() {
+        return couleurPrincipale;
+    }
+
+    public void setCouleurPrincipale(String couleurPrincipale) {
+        this.couleurPrincipale = couleurPrincipale;
+    }
+
+    public String getCouleurArrierePlan() {
+        return couleurArrierePlan;
+    }
+
+    public void setCouleurArrierePlan(String couleurArrierePlan) {
+        this.couleurArrierePlan = couleurArrierePlan;
+    }
+
+    public String getCouleurTitre() {
+        return CouleurTitre;
+    }
+
+    public void setCouleurTitre(String CouleurTitre) {
+        this.CouleurTitre = CouleurTitre;
+    }
+
+    public String getCouleurText() {
+        return couleurText;
+    }
+
+    public void setCouleurText(String couleurText) {
+        this.couleurText = couleurText;
+    }
+
+    public String getCouleurBouton() {
+        return couleurBouton;
+    }
+
+    public void setCouleurBouton(String couleurBouton) {
+        this.couleurBouton = couleurBouton;
+    }
+
+    public String getCouleurtextBouton() {
+        return couleurtextBouton;
+    }
+
+    public void setCouleurtextBouton(String couleurtextBouton) {
+        this.couleurtextBouton = couleurtextBouton;
+    }
+
+    
+    public String getNomespace() {
+        return nomespace;
+    }
+
+    public void setNomespace(String nomespace) {
+        this.nomespace = nomespace;
+    }
+    
+    public String getPhraseCertificat() {
+        return phraseCertificat;
+    }
+
+    public void setPhraseCertificat(String phraseCertificat) {
+        this.phraseCertificat = phraseCertificat;
+    }
 
     public String getProfession_nom() {
         return profession_nom;
@@ -379,6 +464,8 @@ public class Formateur {
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 info = new Formateur();
+                
+                info.setIdFormateur(resultSet.getInt("idformateur"));
                 info.setNom(resultSet.getString("nom"));
                 info.setPrenom(resultSet.getString("Prenom"));
                 info.setEmail(resultSet.getString("email"));
@@ -414,4 +501,243 @@ public class Formateur {
     }
     
 
+    public void updatePhrase(int idFormateur, String phrase) throws Exception {
+    Connection connection = null;
+    PreparedStatement statement = null;
+
+    try {
+        FonctionBase connect = new FonctionBase();
+        connection = connect.connect();
+        
+        // Requête paramétrée avec des ?
+        String query = "UPDATE formateur SET phrasecertificat=? WHERE idformateur=?";
+        
+        // Création du PreparedStatement
+        statement = connection.prepareStatement(query);
+        
+        // Assignation des valeurs aux paramètres
+        statement.setString(1, phrase);
+        statement.setInt(2, idFormateur);
+        
+        // Exécution de la mise à jour
+        statement.executeUpdate();
+    } catch (Exception ex) {
+        throw ex;
+    } finally {
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
+    }
+}
+    
+    
+    public void updateNomEspace(int idFormateur, String nomespace) throws Exception {
+    Connection connection = null;
+    PreparedStatement statement = null;
+
+    try {
+        FonctionBase connect = new FonctionBase();
+        connection = connect.connect();
+        
+        // Requête paramétrée avec des ?
+        String query = "UPDATE formateur SET nomespace=? WHERE idformateur=?";
+        
+        // Création du PreparedStatement
+        statement = connection.prepareStatement(query);
+        
+        // Assignation des valeurs aux paramètres
+        statement.setString(1, nomespace);
+        statement.setInt(2, idFormateur);
+        
+        // Exécution de la mise à jour
+        statement.executeUpdate();
+    } catch (Exception ex) {
+        throw ex;
+    } finally {
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
+    }
+}
+
+    public ArrayList<Formateur> PhraseFormateur(String token) throws Exception {
+        ArrayList<Formateur> listeDept = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+           FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+
+            // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
+            String query = "select * from formateur where token=? AND etatcompte=1 ";
+            statement = connection.prepareStatement(query);
+            // Paramètres de condition
+            statement.setString(1, token);
+            result = statement.executeQuery();
+
+            while (result.next()) {
+                Formateur com = new Formateur();
+                com.setIdFormateur(result.getInt("idformateur"));
+                com.setPhraseCertificat(result.getString("phrasecertificat")); 
+                com.setNomOrgannisme(result.getString("nomorgannisme")); 
+                
+                listeDept.add(com);
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return listeDept;
+    }
+    
+     public void updateConfigPage(int idFormateur, String logo, String couleurPrincipale, String couleurArrierePlan, String CouleurTitre, String couleurText, String couleurBouton, String couleurtextBouton) throws Exception {
+    Connection connection = null;
+    PreparedStatement statement = null;
+
+    try {
+        FonctionBase connect = new FonctionBase();
+        connection = connect.connect();
+        
+        // Requête paramétrée avec des ?
+        String query = "UPDATE formateur SET logo=?,couleurPrincipale=?,couleurArrierePlan=?,CouleurTitre=?,couleurText=?,couleurBouton=?,couleurtextBouton=? WHERE idformateur=?";
+        // Création du PreparedStatement
+        statement = connection.prepareStatement(query);
+        // Assignation des valeurs aux paramètres
+        statement.setString(1, logo);
+        statement.setString(2, couleurPrincipale);
+        statement.setString(3, couleurArrierePlan);
+        statement.setString(4, CouleurTitre);
+        statement.setString(5, couleurText);
+        statement.setString(6, couleurBouton);
+        statement.setString(7, couleurtextBouton);
+        statement.setInt(8, idFormateur);
+
+        
+        // Exécution de la mise à jour
+        statement.executeUpdate();
+    } catch (Exception ex) {
+        throw ex;
+    } finally {
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
+    }
+}
+    
+         public ArrayList<Formateur> ListePage(int idFormateur) throws Exception {
+        ArrayList<Formateur> listeDept = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+           FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+
+            // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
+            String query = "select*from formateur where idformateur=?";
+            statement = connection.prepareStatement(query);
+            // Paramètres de condition
+            statement.setInt(1, idFormateur);
+            result = statement.executeQuery();
+
+            while (result.next()) {
+                Formateur com = new Formateur();
+                com.setIdFormateur(result.getInt("idformateur"));
+                com.setCouleurPrincipale(result.getString("couleurprincipale")); 
+                com.setCouleurArrierePlan(result.getString("couleurarriereplan")); 
+                com.setCouleurTitre(result.getString("couleurtitre")); 
+                com.setCouleurText(result.getString("couleurtext")); 
+                com.setCouleurBouton(result.getString("couleurbouton")); 
+                com.setCouleurtextBouton(result.getString("couleurtextbouton")); 
+                com.setLogo(result.getString("logo"));  
+                com.setNomespace(result.getString("nomespace"));  
+                
+                listeDept.add(com);
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return listeDept;
+    }
+        
+        public ArrayList<Formateur> ListePageNom(String nomespace) throws Exception {
+        ArrayList<Formateur> listeDept = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+           FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+
+            // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
+            String query = "select*from formateur where nomespace=?";
+            statement = connection.prepareStatement(query);
+            // Paramètres de condition
+            statement.setString(1, nomespace);
+            result = statement.executeQuery();
+
+            while (result.next()) {
+                Formateur com = new Formateur();
+                com.setIdFormateur(result.getInt("idformateur"));
+                com.setCouleurPrincipale(result.getString("couleurprincipale")); 
+                com.setCouleurArrierePlan(result.getString("couleurarriereplan")); 
+                com.setCouleurTitre(result.getString("couleurtitre")); 
+                com.setCouleurText(result.getString("couleurtext")); 
+                com.setCouleurBouton(result.getString("couleurbouton")); 
+                com.setCouleurtextBouton(result.getString("couleurtextbouton")); 
+                com.setLogo(result.getString("logo")); 
+                com.setNomespace(result.getString("nomespace"));  
+
+                
+                listeDept.add(com);
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return listeDept;
+    }
+    
+     
 }

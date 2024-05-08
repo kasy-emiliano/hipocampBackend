@@ -1,8 +1,12 @@
 package com.example.elearning.models;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Apprenant {
@@ -310,6 +314,48 @@ FonctionBase.execute(sql);
 }
 
 
+  public ArrayList<Apprenant> idApprenant(String token) throws Exception {
+    ArrayList<Apprenant> listeDept = new ArrayList<>();
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet result = null;
+    
+    try {
+       FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+        
+        // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
+        String query = "select * from Apprenant where token=? LIMIT 1";
+        statement = connection.prepareStatement(query);
+        // Paramètres de condition
+        statement.setString(1, token);
+        result = statement.executeQuery();
+        
+        while (result.next()) {
+             Apprenant com = new Apprenant();            
+            com.setIdApprenant(result.getInt("idapprenant"));
+            com.setNom(result.getString("nom"));
+            com.setPrenom(result.getString("prenom"));
+            com.setEmail(result.getString("email"));
+            com.setNumero(result.getString("numero"));
+            com.setDatenaissance(result.getDate("datenaissance"));
+            listeDept.add(com);
+        }
+    } catch (Exception e) {
+        throw e;
+    } finally {
+        if (result != null) {
+            result.close();
+        }
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
+    }
+    return listeDept;
+}
 
 
 

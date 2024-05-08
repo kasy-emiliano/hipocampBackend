@@ -23,6 +23,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @CrossOrigin
 @Controller
@@ -448,7 +450,144 @@ System.out.println("tss");
     }
 
 
+    
+    @PostMapping ("/UpdatePhrase")
+    public ResponseEntity<String> UpdatePhrase(@RequestParam("phrase")String phrase,@RequestParam("token") String token) throws Exception {
+
+ 
+            try { 
+
+            Formateur userDetails = FonctionBase.selectWithTokenFConnecter(token);
+
+            Formateur com = new Formateur();
+
+            if (userDetails != null) {
+                // Récupérer l'idApprenant
+                System.out.println("Formateur ID: " + userDetails.getIdFormateur());
+
+                int idFormateur = userDetails.getIdFormateur();
+                
+                com.updatePhrase(idFormateur,phrase);
+                
+                return ResponseEntity.ok("Phrase modifié avec succès");
+                
+            } else {
+                // L'Apprenant n'est pas authentifié, retourner une réponse d'erreur
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+            }
+        } catch (NumberFormatException e) {
+            // Gérer le cas où la conversion en nombre échoue
+            return ResponseEntity.badRequest().body("Format de nombre invalide pour idFormation");
+        }
+    }
+    
+    @PostMapping ("/UpdateNomEspace")
+    public ResponseEntity<String> UpdateNomEspace(@RequestParam("nomespace")String nomespace,@RequestParam("token") String token) throws Exception {
+
+ 
+            try { 
+
+            Formateur userDetails = FonctionBase.selectWithTokenFConnecter(token);
+
+            Formateur com = new Formateur();
+
+            if (userDetails != null) {
+                // Récupérer l'idApprenant
+                System.out.println("Formateur ID: " + userDetails.getIdFormateur());
+
+                int idFormateur = userDetails.getIdFormateur();
+                
+                com.updateNomEspace(idFormateur,nomespace);
+                
+                return ResponseEntity.ok("Phrase modifié avec succès");
+                
+            } else {
+                // L'Apprenant n'est pas authentifié, retourner une réponse d'erreur
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+            }
+        } catch (NumberFormatException e) {
+            // Gérer le cas où la conversion en nombre échoue
+            return ResponseEntity.badRequest().body("Format de nombre invalide pour idFormation");
+        }
+    }
+    
+     @GetMapping ("/PhraseFormateur")
+    public ResponseEntity<ArrayList<Formateur>> PhraseFormateur(@RequestParam("token") String token  ) throws Exception {
+                
+                 ArrayList<Formateur> com = new Formateur().PhraseFormateur(token);
+                 
+        return  ResponseEntity.ok(com);
+                
+ 
+
+    }
+    
+    @PostMapping("/ConfigurationPage")
+    public ResponseEntity<String> ConfigurationPage( @RequestParam("logo") MultipartFile file,HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        String token = request.getParameter("token");
+        String couleurPrincipale = request.getParameter("couleurPrincipale");
+        String couleurArrierePlan = request.getParameter("couleurArrierePlan");
+        String CouleurTitre = request.getParameter("CouleurTitre");
+        String couleurText = request.getParameter("couleurText");
+        String couleurBouton = request.getParameter("couleurBouton");
+        String couleurtextBouton = request.getParameter("couleurtextBouton");
+
+        String UPLOAD_DIR = "uploads/";
+        String logo="";
+        
+        try {
+            // Vérifiez si le répertoire de stockage existe, sinon, créez-le
+            File uploadDir = new File(UPLOAD_DIR);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+
+            // Récupérez le nom du fichier téléchargé
+            String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+
+            // Construisez le chemin complet de stockage
+             logo = UPLOAD_DIR + fileName;
+
+            // Copiez le fichier dans le répertoire de stockage
+            Path targetLocation = Paths.get(logo);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors du téléchargement de l'image : " + e.getMessage());
+        }
+        
+        Formateur userDetails = FonctionBase.selectWithTokenFConnecter(token);
+
+        int idFormateur = userDetails.getIdFormateur();
+
+        Formateur com = new Formateur();
+
+        com.updateConfigPage(idFormateur, logo,couleurPrincipale,couleurArrierePlan,CouleurTitre,couleurText,couleurBouton,couleurtextBouton);
+
+        return ResponseEntity.ok("Commentaire ajouté avec succès");
+
+    }
+    
+           @GetMapping ("/ListConfigPage")
+    public ResponseEntity<ArrayList<Formateur>> ListePage(@RequestParam("token") String token  ) throws Exception {
+        
+                    Formateur userDetails = FonctionBase.selectWithTokenFConnecter(token);
+                int idFormateur = userDetails.getIdFormateur();
+        
+ ArrayList<Formateur> com = new Formateur().ListePage(idFormateur);
+        return  ResponseEntity.ok(com);
+    }
+    
+      @GetMapping ("/ListConfigPageNom")
+    public ResponseEntity<ArrayList<Formateur>> ListePageNom(@RequestParam("nomespace") String nomespace  ) throws Exception {
+        
+        
+ ArrayList<Formateur> com = new Formateur().ListePageNom(nomespace);
+        return  ResponseEntity.ok(com);
+    }
+   
 
 
+    
 
 }

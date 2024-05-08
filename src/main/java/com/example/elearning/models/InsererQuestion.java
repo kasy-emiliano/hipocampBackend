@@ -6,6 +6,15 @@ public class InsererQuestion {
 
     private Quiz monQuiz;
     private ArrayList<TypeQuestion> TypeQuestion;
+    private Examens monExam;
+
+    public Examens getMonExam() {
+        return monExam;
+    }
+
+    public void setMonExam(Examens monExam) {
+        this.monExam = monExam;
+    }
 
 
     public Quiz getMonQuiz() {

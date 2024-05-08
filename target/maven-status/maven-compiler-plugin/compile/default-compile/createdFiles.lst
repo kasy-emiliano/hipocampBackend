@@ -6,14 +6,12 @@ com\example\elearning\models\JwtUtil.class
 com\example\elearning\controller\CommentaireController.class
 com\example\elearning\models\inscription.class
 com\example\elearning\controller\FomateurController.class
-com\example\elearning\controller\WebSocketConfig.class
 com\example\elearning\models\ReponseCommentaire.class
 com\example\elearning\models\Recherche.class
 com\example\elearning\models\mouvementQuiz.class
 com\example\elearning\models\EmailService$2.class
 com\example\elearning\models\SousChapitres.class
 com\example\elearning\models\Cours.class
-com\example\elearning\models\FonctionBase.class
 com\example\elearning\models\DetailsFormation.class
 com\example\elearning\models\Statistique.class
 com\example\elearning\controller\ActivationController.class

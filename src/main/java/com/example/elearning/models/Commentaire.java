@@ -175,6 +175,18 @@ public class Commentaire {
         
         connection.createStatement().execute("SET NAMES 'UTF8'"); // Pour PostgreSQL
         statement = connection.prepareStatement(query);
+        /* if(isFormateursend==true){
+            //insert into message(idformateur, idApprenant,...) values (?, ?, ?)
+            statement.setInt(1,idSender);
+            statement.setInt(2,idrecever);
+        }else{
+            statement.setInt(1,idRecever);
+            statement.setInt(2,idSender);
+            
+
+        }
+        
+        */
         statement.setInt(1, idFormation);
         statement.setInt(2, idFormateur);
         statement.setString(3, commentaire);
@@ -204,6 +216,26 @@ public class Commentaire {
             statement.setInt(1, idCommentaire);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
+                /*
+                int idMessage=resultSet.getLong("idMessage");
+                
+                int idformateur=resultSet.getInt("idFormateur");
+                int idApprenant=resultSet.getInt("idApprenant");
+                boolean isFormateurSend=resultSet.getBoolean(isFormateurSend);
+                String message=resultSet.getString("message");
+                date date=resultSet.getDate("date");
+
+               if(isFormateurSend==true){
+                 mes.setIdSender(idFormateurs);
+                mes.setIdrecever(idApprenant);
+               } else{
+                mes.setIdSender(idapprenant);
+                mes.setIdrecever(idformateur);
+
+               }
+
+
+                */
                 info = new Commentaire();
                 info.setIdCommentaire(resultSet.getInt("idcommentaire"));
                 info.setIdFormation(resultSet.getInt("idformation"));

@@ -1,6 +1,10 @@
 package com.example.elearning.models;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -8,24 +12,24 @@ import java.util.Date;
 
 public class Formation {
 
-   private int idFormation ;
-    private int idFormateur ;
-    private int idCategorie ;
+    private int idFormation;
+    private int idFormateur;
+    private int idCategorie;
     private String nomCategorie;
-    private int TypesAcces ;
+    private int TypesAcces;
     private String nomTypesAcces;
     private int Langues;
     private String nomLangues;
-    private String Titre ;
-    private String duree ;
+    private String Titre;
+    private String duree;
     private int unite;
-    private String nomUnite ;
+    private String nomUnite;
     private String resumer;
     private String pdc;
-    private String token ;
+    private String token;
     private byte[] image;
     private String prix;
-    private int etat ;
+    private int etat;
     private ArrayList<Chapitres> meschapitres;
     private ArrayList<Zoom> meszooms;
     private ArrayList<Quiz> mesQuizs;
@@ -34,7 +38,26 @@ public class Formation {
     private long progres;
     private String devalidation;
     private String dedemande;
-    private  int totalEleve;
+    private int totalEleve;
+    private String nomespace;
+    private int etatPublication;
+
+    public int getEtatPublication() {
+        return etatPublication;
+    }
+
+    public void setEtatPublication(int etatPublication) {
+        this.etatPublication = etatPublication;
+    }
+
+    public String getNomespace() {
+        return nomespace;
+    }
+
+    public void setNomespace(String nomespace) {
+        this.nomespace = nomespace;
+    }
+
     public String getDedemande() {
         return dedemande;
     }
@@ -44,8 +67,6 @@ public class Formation {
     }
 
     public long getProgres() {
-
-
 
         return progres;
     }
@@ -58,11 +79,9 @@ public class Formation {
         return monFormateur;
     }
 
-
     public void setMonFormateur(Formateur monFormateur) {
         this.monFormateur = monFormateur;
     }
-
 
     public String getPrix() {
         return prix;
@@ -88,10 +107,9 @@ public class Formation {
         this.unite = unite;
     }
 
-    public Formation(){
+    public Formation() {
 
-
-}
+    }
 
     public String getDateDajout() {
         return dateDajout;
@@ -109,7 +127,7 @@ public class Formation {
         this.meschapitres = meschapitres;
     }
 
-    public Formation(int idFormation, int idFormateur, int idCategorie, String nomCategorie, int typesAcces, String nomTypesAcces, int langues, String nomLangues, String titre, String duree, int unite, String nomUnite, String resumer, String pdc, String token, int etat, byte[]b,double prix,String d,String c,String e) throws Exception {
+    public Formation(int idFormation, int idFormateur, int idCategorie, String nomCategorie, int typesAcces, String nomTypesAcces, int langues, String nomLangues, String titre, String duree, int unite, String nomUnite, String resumer, String pdc, String token, int etat, byte[] b, double prix, String d, String c, String e) throws Exception {
         this.idFormation = idFormation;
         this.idFormateur = idFormateur;
         this.idCategorie = idCategorie;
@@ -126,22 +144,21 @@ public class Formation {
         this.pdc = pdc;
         this.token = token;
         this.etat = etat;
-        this.image=b;
-        this.prix=String.valueOf(prix);
-         this.meschapitres=FonctionBase.allChapitres(idFormation);
-         this.meszooms=FonctionBase.allZooms(idFormation);
-         this.mesQuizs=FonctionBase.allQuiz(idFormation);
-this.devalidation=c;
-         this.dateDajout=d;
-        this.dedemande=e;
+        this.image = b;
+        this.prix = String.valueOf(prix);
+        this.meschapitres = FonctionBase.allChapitres(idFormation);
+        this.meszooms = FonctionBase.allZooms(idFormation);
+        this.mesQuizs = FonctionBase.allQuiz(idFormation);
+        this.devalidation = c;
+        this.dateDajout = d;
+        this.dedemande = e;
         //System.out.println("iooooo:"+this.dateDajout);
-         this.monFormateur=FonctionBase.moi(idFormateur);
+        this.monFormateur = FonctionBase.moi(idFormateur);
 
-        ArrayList<Apprenant>rep=FonctionBase.ListApprenantI(idFormation);
-        this.totalEleve=rep.size();
+        ArrayList<Apprenant> rep = FonctionBase.ListApprenantI(idFormation);
+        this.totalEleve = rep.size();
         //System.out.println("tsssss:"+this.totalEleve);
     }
-
 
     public ArrayList<Quiz> getMesQuizs() {
         return mesQuizs;
@@ -151,7 +168,7 @@ this.devalidation=c;
         this.mesQuizs = mesQuizs;
     }
 
-     public ArrayList<Zoom> getMeszooms() {
+    public ArrayList<Zoom> getMeszooms() {
         return meszooms;
     }
 
@@ -207,45 +224,44 @@ this.devalidation=c;
         Langues = langues;
         Titre = titre;
         this.duree = duree;
-        this.unite=u;
+        this.unite = u;
         this.resumer = resumer;
         this.pdc = pdc;
         this.token = token;
         this.etat = etat;
     }
 
-    public Formation(int idFormateur, int idCategorie, int typesAcces, int langues, String titre, String duree,int u, String resumer, String pdc, String token, int etat) {
+    public Formation(int idFormateur, int idCategorie, int typesAcces, int langues, String titre, String duree, int u, String resumer, String pdc, String token, int etat) {
         this.idFormateur = idFormateur;
         this.idCategorie = idCategorie;
         TypesAcces = typesAcces;
         Langues = langues;
         Titre = titre;
         this.duree = duree;
-        this.unite=u;
+        this.unite = u;
         this.resumer = resumer;
         this.pdc = pdc;
         this.token = token;
         this.etat = etat;
     }
 
-
-    public void inserer(int idFormateur, int idCategorie, int typesAcces, int langues, String titre, String duree,int u, String resumer, String pdc,double prix) throws Exception {
+    public void inserer(int idFormateur, int idCategorie, int typesAcces, int langues, String titre, String duree, int u, String resumer, String pdc, double prix,int etatPublication) throws Exception {
         String Token = ActivationTokenGenerator.generateToken();
         LocalDate date = LocalDate.now();
 
         // Formater la date en "année-mois-jour"
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String formattedDate = date.format(formatter);
-    String sql="Insert into Formation(idFormateur,idCategorie,typesAcces,langues,titre,duree,unite,resumer,pdc,token,etat,prix,dateDajout)values("+idFormateur+","+idCategorie+","+typesAcces+","+langues+",'"+titre+"','"+duree+"',"+u+",'"+resumer+"','"+pdc+"','"+Token+"',"+0+","+prix+",'"+formattedDate+"')";
-System.out.println(sql);
-FonctionBase.execute(sql);
-    }
-    public void modif( int idCategorie, int typesAcces, int langues, String titre, String duree,int u, String resumer, String pdc, String token,double prix) throws Exception {
-        String sql="UPDATE Formation set idCategorie="+idCategorie+", typesAcces="+typesAcces+", langues="+langues+", titre='"+titre+"', duree='"+duree+"', unite="+u+", resumer='"+resumer+"',pdc='"+pdc+"',prix="+prix+" where token='"+token+"'";
-
+        String sql = "Insert into Formation(idFormateur,idCategorie,typesAcces,langues,titre,duree,unite,resumer,pdc,token,etat,prix,dateDajout,etatPublication)values(" + idFormateur + "," + idCategorie + "," + typesAcces + "," + langues + ",'" + titre + "','" + duree + "'," + u + ",'" + resumer + "','" + pdc + "','" + Token + "'," + 0 + "," + prix + ",'" + formattedDate + "','" + etatPublication + "')";
+        System.out.println(sql);
         FonctionBase.execute(sql);
     }
 
+    public void modif(int idCategorie, int typesAcces, int langues, String titre, String duree, int u, String resumer, String pdc, String token, double prix) throws Exception {
+        String sql = "UPDATE Formation set idCategorie=" + idCategorie + ", typesAcces=" + typesAcces + ", langues=" + langues + ", titre='" + titre + "', duree='" + duree + "', unite=" + u + ", resumer='" + resumer + "',pdc='" + pdc + "',prix=" + prix + " where token='" + token + "'";
+
+        FonctionBase.execute(sql);
+    }
 
     public void demandevalidation(int id) throws Exception {
 
@@ -255,12 +271,12 @@ FonctionBase.execute(sql);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String formattedDate = date.format(formatter);
 
-        String sql="UPDATE Formation set etat=1 ,dedemande='"+formattedDate+"' where idFormation="+id;
+        String sql = "UPDATE Formation set etat=1 ,dedemande='" + formattedDate + "' where idFormation=" + id;
         FonctionBase.execute(sql);
     }
 
     public void suppr(String token) throws Exception {
-        String sql="delete formation where token='"+token+"'";
+        String sql = "delete formation where token='" + token + "'";
 
         FonctionBase.execute(sql);
 
@@ -360,6 +376,77 @@ FonctionBase.execute(sql);
 
     public void setEtat(int etat) {
         this.etat = etat;
+    }
+
+    public ArrayList<Formation> mesFormationEspace(String nomespace) throws Exception {
+        ArrayList<Formation> listeDept = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+            FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+
+            // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
+            String query = "SELECT formation.idformation, formation.idformateur, formation.idcategorie, formation.typesacces, formation.langues, formation.titre, formation.duree, formation.unite, formation.resumer, formation.pdc, formation.token, formation.etat, formation.prix, formation.datedajout, formation.devalidation, formation.dedemande, categorie.nom AS nomCategorie,typesacces.nom AS nomTypesAcces,langues.nom AS nomLangues,unite.nom AS nomUnite,Formateur.nomespace FROM formation JOIN categorie ON formation.idcategorie = categorie.idcategorie JOIN typesacces ON formation.typesacces = typesacces.idTypesAcces JOIN langues ON formation.langues = langues.idLangues JOIN unite ON formation.unite = unite.idUnite JOIN Formateur ON formation.idformateur = Formateur.idFormateur WHERE nomespace= ? ORDER BY formation.idformation DESC ";
+            statement = connection.prepareStatement(query);
+            // Paramètres de condition
+            statement.setString(1, nomespace);
+            result = statement.executeQuery();
+
+            while (result.next()) {
+                Formation com = new Formation();
+
+                com.setIdFormation(result.getInt("idFormation"));
+                com.setIdFormateur(result.getInt("idformateur"));
+                com.setIdCategorie(result.getInt("idcategorie"));
+                com.setTypesAcces(result.getInt("typesacces"));
+                com.setLangues(result.getInt("langues"));
+                com.setTitre(result.getString("titre"));
+                com.setDuree(result.getString("duree"));
+                com.setUnite(result.getInt("unite"));
+                com.setResumer(result.getString("resumer"));
+                com.setToken(result.getString("token"));
+                com.setEtat(result.getInt("etat"));
+                com.setPrix(result.getString("prix"));
+                com.setDateDajout(result.getString("datedajout"));
+                com.setDevalidation(result.getString("devalidation"));
+                com.setDedemande(result.getString("dedemande"));
+                com.setNomCategorie(result.getString("nomCategorie"));
+                com.setNomTypesAcces(result.getString("nomTypesAcces"));
+                com.setNomLangues(result.getString("nomLangues"));
+                com.setNomUnite(result.getString("nomUnite"));
+                com.setNomespace(result.getString("nomespace"));
+                // Récupérer le chemin de l'image depuis la base de données
+                String imagePath = result.getString("pdc");
+
+                // Créer un objet File à partir du chemin de l'image
+                File imageFile = new File(imagePath);
+
+                // Lire les octets de l'image
+                byte[] imageData = Files.readAllBytes(imageFile.toPath());
+
+                // Définir les octets de l'image dans l'objet Formation
+                com.setImage(imageData);
+
+                listeDept.add(com);
+
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return listeDept;
     }
 
 }

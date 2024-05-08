@@ -142,8 +142,6 @@ for (int y=0;y<reto.size();y++){
 
     @PostMapping(value = "/newQuestion", consumes = MediaType.APPLICATION_JSON_VALUE)
 
-
-
     public ResponseEntity<String> newQuestion(@RequestBody pff ii    ) throws Exception {
 
         System.out.println("iio"+ii.getIdQuiz());

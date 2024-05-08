@@ -165,55 +165,77 @@ public class FonctionBase {
 
 
 public static ArrayList<Formation> LesFormationNonValide() throws Exception {
-    String sql = "SELECT * FROM formation " +
-                 "JOIN categorie ON formation.idcategorie = categorie.idcategorie " +
-                 "JOIN typesacces ON formation.typesacces = typesacces.idTypesAcces " +
-                 "JOIN langues ON formation.langues = langues.idLangues " +
-                 "JOIN unite ON formation.unite = unite.idUnite " +
-                 "WHERE formation.etat = 1 " +
-                 "ORDER BY formation.idformation DESC";
-    ArrayList<Formation> rep = new ArrayList<>();
-    Connection connection = null;
-    Statement statement = null;
-    ResultSet resultSet = null;
-    
-    try {
-        // Établir une connexion
-        connection = connect();
-        
-        // Créer une déclaration
-        statement = connection.createStatement();
-        
-        // Exécuter la requête
-        resultSet = statement.executeQuery(sql);
+    ArrayList<Formation> listeDept = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
 
-        // Parcourir les résultats
-        while (resultSet.next()) {
-            // Lecture du chemin du fichier image
-            String imagePath = resultSet.getString(10);
-            File imageFile = new File(imagePath);
-            byte[] imageData = Files.readAllBytes(imageFile.toPath());
-            
-            // Création de l'objet Formation et ajout à la liste
-            rep.add(new Formation(resultSet.getInt(1), resultSet.getInt(2), resultSet.getInt(3), resultSet.getString(18), resultSet.getInt(4), resultSet.getString(20), resultSet.getInt(5), resultSet.getString(22), resultSet.getString(6), resultSet.getString(7), resultSet.getInt(8), resultSet.getString(24), resultSet.getString(9), imagePath, resultSet.getString(11), resultSet.getInt(12), imageData, resultSet.getDouble(13), resultSet.getString(14), resultSet.getString(15), resultSet.getString(16)));
+        try {
+            FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+
+            // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
+            String sql =" SELECT formation.*,categorie.nom AS categorie_nom,typesacces.nom AS types_acces_nom,langues.nom AS langues_nom,unite.nom AS unite_nom FROM formation JOIN categorie ON formation.idcategorie = categorie.idcategorie JOIN typesacces ON formation.typesacces = typesacces.idTypesAcces JOIN langues ON formation.langues = langues.idLangues JOIN unite ON formation.unite = unite.idUnite WHERE formation.etat = 1 ORDER BY formation.idformation DESC;";
+            statement = connection.prepareStatement(sql);
+            // Paramètres de condition
+            result = statement.executeQuery();
+
+            while (result.next()) {
+                Formation com = new Formation();
+
+                com.setIdFormation(result.getInt("idFormation"));
+                com.setIdFormateur(result.getInt("idformateur"));
+                com.setIdCategorie(result.getInt("idcategorie"));
+                com.setTypesAcces(result.getInt("typesacces"));
+                com.setLangues(result.getInt("langues"));
+                com.setTitre(result.getString("titre"));
+                com.setDuree(result.getString("duree"));
+                com.setUnite(result.getInt("unite"));
+                com.setResumer(result.getString("resumer"));
+                com.setToken(result.getString("token"));
+                com.setEtat(result.getInt("etat"));
+                com.setPrix(result.getString("prix"));
+                com.setDateDajout(result.getString("datedajout"));
+                com.setDevalidation(result.getString("devalidation"));
+                com.setDedemande(result.getString("dedemande"));
+                com.setNomCategorie(result.getString("categorie_nom"));
+                com.setNomTypesAcces(result.getString("types_acces_nom"));
+                com.setNomLangues(result.getString("langues_nom"));
+                com.setNomUnite(result.getString("unite_nom"));
+                com.setEtatPublication(result.getInt("etatPublication"));
+                // Récupérer le chemin de l'image depuis la base de données
+                String imagePath = result.getString("pdc");
+
+                // Créer un objet File à partir du chemin de l'image
+                File imageFile = new File(imagePath);
+
+                // Lire les octets de l'image
+                byte[] imageData = Files.readAllBytes(imageFile.toPath());
+
+                // Définir les octets de l'image dans l'objet Formation
+                com.setImage(imageData);
+                
+ ArrayList<Apprenant> rep = FonctionBase.ListApprenantI(com.getIdFormation());
+    // Définissez le nombre total d'élèves pour cette formation
+    com.setTotalEleve(rep.size());
+                listeDept.add(com);
+
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
         }
-    } catch (Exception e) {
-        e.printStackTrace(); // Gérer les exceptions de manière appropriée
-    } finally {
-        // Fermer les ressources dans un bloc finally pour s'assurer qu'elles sont libérées
-        if (resultSet != null) {
-            resultSet.close();
-        }
-        if (statement != null) {
-            statement.close();
-        }
-        if (connection != null) {
-            connection.close();
-        }
+        return listeDept;
     }
-
-    return rep;
-}
 public static ArrayList<Formation> MesFormationSuivies(int parseInt) throws Exception {
     String sql = "SELECT * FROM formation " +
                  "JOIN categorie ON formation.idcategorie = categorie.idcategorie " +
@@ -221,7 +243,7 @@ public static ArrayList<Formation> MesFormationSuivies(int parseInt) throws Exce
                  "JOIN langues ON formation.langues = langues.idLangues " +
                  "JOIN unite ON formation.unite = unite.idUnite " +
                  "JOIN inscritFormation ON formation.idFormation = inscritFormation.idFormation " +
-                 "WHERE formation.etat = 2 AND inscritFormation.idApprenant = " + parseInt +
+                 "WHERE formation.etat = 2 AND etatpublication=1 and  inscritFormation.idApprenant = " + parseInt + 
                  "ORDER BY idinscritFormation DESC";
     ArrayList<Formation> rep = new ArrayList<>();
     Connection connection = null;
@@ -265,6 +287,74 @@ public static ArrayList<Formation> MesFormationSuivies(int parseInt) throws Exce
 
     return rep;
 }
+public static ArrayList<Formation> MesFormationSuiviesDeux(int idApprenant,String nomespace) throws Exception {
+        ArrayList<Formation> listeDept = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+            FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+
+            // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
+            String sql ="SELECT * FROM formation JOIN categorie ON formation.idcategorie = categorie.idcategorie JOIN typesacces ON formation.typesacces = typesacces.idTypesAcces JOIN langues ON formation.langues = langues.idLangues JOIN unite ON formation.unite = unite.idUnite JOIN inscritFormation ON formation.idFormation = inscritFormation.idFormation Join formateur on formation.idformateur=formateur.idformateur WHERE formation.etat = 2 AND etatpublication=2 and formateur.nomespace=? and  inscritFormation.idApprenant = ? ORDER BY idinscritFormation DESC";
+            statement = connection.prepareStatement(sql);
+            // Paramètres de condition
+            statement.setString(1, nomespace);
+            statement.setInt(2, idApprenant);
+            result = statement.executeQuery();
+
+            while (result.next()) {
+                Formation com = new Formation();
+
+                com.setIdFormation(result.getInt("idFormation"));
+                com.setIdFormateur(result.getInt("idformateur"));
+                com.setIdCategorie(result.getInt("idcategorie"));
+                com.setTypesAcces(result.getInt("typesacces"));
+                com.setLangues(result.getInt("langues"));
+                com.setTitre(result.getString("titre"));
+                com.setDuree(result.getString("duree"));
+                com.setUnite(result.getInt("unite"));
+                com.setResumer(result.getString("resumer"));
+                com.setToken(result.getString("token"));
+                com.setEtat(result.getInt("etat"));
+                com.setPrix(result.getString("prix"));
+                com.setDateDajout(result.getString("datedajout"));
+                com.setDevalidation(result.getString("devalidation"));
+                com.setDedemande(result.getString("dedemande"));
+                com.setEtatPublication(result.getInt("etatPublication"));
+                // Récupérer le chemin de l'image depuis la base de données
+                String imagePath = result.getString("pdc");
+
+                // Créer un objet File à partir du chemin de l'image
+                File imageFile = new File(imagePath);
+
+                // Lire les octets de l'image
+                byte[] imageData = Files.readAllBytes(imageFile.toPath());
+
+                // Définir les octets de l'image dans l'objet Formation
+                com.setImage(imageData);
+                 
+                listeDept.add(com);
+
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return listeDept;
+    }
+
 
 
 
@@ -483,7 +573,166 @@ public static ArrayList<Formation> LesFormationValide() throws Exception {
     return rep;
 }
 
+
 public static ArrayList<Formation> MesFormation(int idFormateur) throws Exception {
+        ArrayList<Formation> listeDept = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+            FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+
+            // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
+            String sql ="SELECT formation.*,categorie.nom AS categorie_nom,typesacces.nom AS types_acces_nom,langues.nom AS langues_nom,unite.nom AS unite_nom FROM formation JOIN categorie ON formation.idcategorie = categorie.idcategorie JOIN typesacces ON formation.typesacces = typesacces.idTypesAcces JOIN langues ON formation.langues = langues.idLangues JOIN unite ON formation.unite = unite.idUnite WHERE idFormateur =? ORDER BY formation.idformation DESC;";
+            statement = connection.prepareStatement(sql);
+            // Paramètres de condition
+            statement.setInt(1, idFormateur);
+            result = statement.executeQuery();
+
+            while (result.next()) {
+                Formation com = new Formation();
+
+                com.setIdFormation(result.getInt("idFormation"));
+                com.setIdFormateur(result.getInt("idformateur"));
+                com.setIdCategorie(result.getInt("idcategorie"));
+                com.setTypesAcces(result.getInt("typesacces"));
+                com.setLangues(result.getInt("langues"));
+                com.setTitre(result.getString("titre"));
+                com.setDuree(result.getString("duree"));
+                com.setUnite(result.getInt("unite"));
+                com.setResumer(result.getString("resumer"));
+                com.setToken(result.getString("token"));
+                com.setEtat(result.getInt("etat"));
+                com.setPrix(result.getString("prix"));
+                com.setDateDajout(result.getString("datedajout"));
+                com.setDevalidation(result.getString("devalidation"));
+                com.setDedemande(result.getString("dedemande"));
+                com.setNomCategorie(result.getString("categorie_nom"));
+                com.setNomTypesAcces(result.getString("types_acces_nom"));
+                com.setNomLangues(result.getString("langues_nom"));
+                com.setNomUnite(result.getString("unite_nom"));
+                com.setEtatPublication(result.getInt("etatPublication"));
+                // Récupérer le chemin de l'image depuis la base de données
+                String imagePath = result.getString("pdc");
+
+                // Créer un objet File à partir du chemin de l'image
+                File imageFile = new File(imagePath);
+
+                // Lire les octets de l'image
+                byte[] imageData = Files.readAllBytes(imageFile.toPath());
+
+                // Définir les octets de l'image dans l'objet Formation
+                com.setImage(imageData);
+                
+ ArrayList<Apprenant> rep = FonctionBase.ListApprenantI(com.getIdFormation());
+    // Définissez le nombre total d'élèves pour cette formation
+    com.setTotalEleve(rep.size());
+                listeDept.add(com);
+
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return listeDept;
+    }
+
+public static ArrayList<Formation> RechercheFormation(String sql, Connection connection) throws Exception {
+    ArrayList<Formation> listeDept = new ArrayList<>();
+
+    Statement statement = null;
+    ResultSet result = null;
+    try {
+        statement = connection.createStatement();
+        result = statement.executeQuery(sql);
+
+         while (result.next()) {
+                Formation com = new Formation();
+
+                com.setIdFormation(result.getInt("idFormation"));
+                com.setIdFormateur(result.getInt("idformateur"));
+                com.setIdCategorie(result.getInt("idcategorie"));
+                com.setTypesAcces(result.getInt("typesacces"));
+                com.setLangues(result.getInt("langues"));
+                com.setTitre(result.getString("titre"));
+                com.setDuree(result.getString("duree"));
+                com.setUnite(result.getInt("unite"));
+                com.setResumer(result.getString("resumer"));
+                com.setToken(result.getString("token"));
+                com.setEtat(result.getInt("etat"));
+                com.setPrix(result.getString("prix"));
+                com.setDateDajout(result.getString("datedajout"));
+                com.setDevalidation(result.getString("devalidation"));
+                com.setDedemande(result.getString("dedemande"));
+                com.setNomCategorie(result.getString("categorie_nom"));
+                com.setNomTypesAcces(result.getString("types_acces_nom"));
+                com.setNomLangues(result.getString("langues_nom"));
+                com.setNomUnite(result.getString("unite_nom"));
+                com.setEtatPublication(result.getInt("etatPublication"));
+                // Récupérer le chemin de l'image depuis la base de données
+                String imagePath = result.getString("pdc");
+
+                // Créer un objet File à partir du chemin de l'image
+                File imageFile = new File(imagePath);
+
+                // Lire les octets de l'image
+                byte[] imageData = Files.readAllBytes(imageFile.toPath());
+
+                // Définir les octets de l'image dans l'objet Formation
+                com.setImage(imageData);
+                 
+                ArrayList<Apprenant> rep = FonctionBase.ListApprenantI(com.getIdFormation());
+    // Définissez le nombre total d'élèves pour cette formation
+    com.setTotalEleve(rep.size());
+ 
+                listeDept.add(com);
+
+            }
+    } finally {
+        // Fermeture du ResultSet
+        if (result != null) {
+            try {
+                result.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace(); // Gérer l'exception de fermeture
+            }
+        }
+
+        // Fermeture du Statement
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace(); // Gérer l'exception de fermeture
+            }
+        }
+
+        // Fermeture de la connexion
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace(); // Gérer l'exception de fermeture
+            }
+        }
+    }
+
+    return listeDept;
+}
+
+ 
+/*public static ArrayList<Formation> MesFormation(int idFormateur) throws Exception {
     String sql = "SELECT * FROM formation " +
                  "JOIN categorie ON formation.idcategorie = categorie.idcategorie " +
                  "JOIN typesacces ON formation.typesacces = typesacces.idTypesAcces " +
@@ -514,7 +763,7 @@ public static ArrayList<Formation> MesFormation(int idFormateur) throws Exceptio
             byte[] imageData = Files.readAllBytes(imageFile.toPath());
 
             // Création de l'objet Formation et ajout à la liste
-            rep.add(new Formation(resultSet.getInt(1), resultSet.getInt(2), resultSet.getInt(3), resultSet.getString(18), resultSet.getInt(4), resultSet.getString(20), resultSet.getInt(5), resultSet.getString(22), resultSet.getString(6), resultSet.getString(7), resultSet.getInt(8), resultSet.getString(24), resultSet.getString(9), imagePath, resultSet.getString(11), resultSet.getInt(12), imageData, resultSet.getDouble(13), resultSet.getString(14), resultSet.getString(15), resultSet.getString(16)));
+            rep.add(new Formation(resultSet.getInt(1), resultSet.getInt(2), resultSet.getInt(3), resultSet.getString(19), resultSet.getInt(4), resultSet.getString(21), resultSet.getInt(5), resultSet.getString(23), resultSet.getString(6), resultSet.getString(7), resultSet.getInt(8), resultSet.getString(25), resultSet.getString(9), imagePath, resultSet.getString(12), resultSet.getInt(13), imageData, resultSet.getDouble(14), resultSet.getString(15), resultSet.getString(16), resultSet.getString(17),resultSet.getInt(18)));
         }
     } catch (Exception e) {
         e.printStackTrace(); // Gérer les exceptions de manière appropriée
@@ -532,10 +781,10 @@ public static ArrayList<Formation> MesFormation(int idFormateur) throws Exceptio
     }
 
     return rep;
-}
+}*/
 
 
-public static ArrayList<Formation> RechercheFormation(String sql, Connection connection) throws Exception {
+/*public static ArrayList<Formation> RechercheFormation(String sql, Connection connection) throws Exception {
     ArrayList<Formation> rep = new ArrayList<>();
 
     Statement statement = null;
@@ -580,29 +829,72 @@ public static ArrayList<Formation> RechercheFormation(String sql, Connection con
 
     return rep;
 }
-
+*/
 
 public static Formation MonFormation(int parseInt) throws Exception {
-    String sql = "SELECT * FROM formation JOIN categorie ON formation.idcategorie = categorie.idcategorie JOIN typesacces ON formation.typesacces = typesacces.idTypesAcces JOIN langues ON formation.langues = langues.idLangues JOIN unite ON formation.unite = unite.idUnite WHERE idFormation = " + parseInt;
-    Formation rep = new Formation();
+    String sql = "SELECT formation.*, categorie.nom AS categorie_nom, typesacces.nom AS types_acces_nom, langues.nom AS langues_nom, unite.nom AS unite_nom FROM formation JOIN categorie ON formation.idcategorie = categorie.idcategorie JOIN typesacces ON formation.typesacces = typesacces.idTypesAcces JOIN langues ON formation.langues = langues.idLangues JOIN unite ON formation.unite = unite.idUnite WHERE idformation = " + parseInt;
+    Formation rep = null; // Utilisation de null pour indiquer qu'aucune formation n'a encore été créée
 
     Connection connection = connect();
     Statement statement = null;
-    ResultSet resultSet = null;
+    ResultSet result = null;
     try {
         statement = connection.createStatement();
-        resultSet = statement.executeQuery(sql);
+        result = statement.executeQuery(sql);
 
-        File image = new File("");
-        while (resultSet.next()) {
-            image = new File(resultSet.getString(10));
-            rep = new Formation(resultSet.getInt(1), resultSet.getInt(2), resultSet.getInt(3), resultSet.getString(18), resultSet.getInt(4), resultSet.getString(20), resultSet.getInt(5), resultSet.getString(22), resultSet.getString(6), resultSet.getString(7), resultSet.getInt(8), resultSet.getString(24), resultSet.getString(9), resultSet.getString(10), resultSet.getString(11), resultSet.getInt(12), Files.readAllBytes(image.toPath()), resultSet.getDouble(13), resultSet.getString(14), resultSet.getString(15), resultSet.getString(16));
+        // On crée l'objet Formation s'il y a des résultats
+        if (result.next()) {
+            rep = new Formation(); // Création de l'objet Formation
+            rep.setIdFormation(result.getInt("idFormation"));
+            rep.setIdFormateur(result.getInt("idformateur"));
+            rep.setIdCategorie(result.getInt("idcategorie"));
+            rep.setTypesAcces(result.getInt("typesacces"));
+            rep.setLangues(result.getInt("langues"));
+            rep.setTitre(result.getString("titre"));
+            rep.setDuree(result.getString("duree"));
+            rep.setUnite(result.getInt("unite"));
+            rep.setResumer(result.getString("resumer"));
+            rep.setToken(result.getString("token"));
+            rep.setEtat(result.getInt("etat"));
+            rep.setPrix(result.getString("prix"));
+            rep.setDateDajout(result.getString("datedajout"));
+            rep.setDevalidation(result.getString("devalidation"));
+            rep.setDedemande(result.getString("dedemande"));
+            rep.setNomCategorie(result.getString("categorie_nom"));
+            rep.setNomTypesAcces(result.getString("types_acces_nom"));
+            rep.setNomLangues(result.getString("langues_nom"));
+            rep.setNomUnite(result.getString("unite_nom"));
+            rep.setEtatPublication(result.getInt("etatPublication"));
+            // Récupérer le chemin de l'image depuis la base de données
+            String imagePath = result.getString("pdc");
+
+            // Créer un objet File à partir du chemin de l'image
+            File imageFile = new File(imagePath);
+
+            // Lire les octets de l'image
+            byte[] imageData = Files.readAllBytes(imageFile.toPath());
+
+            // Définir les octets de l'image dans l'objet Formation
+            rep.setImage(imageData);
+            Formateur formateur = FonctionBase.moi(result.getInt("idFormateur"));
+
+             ArrayList<Chapitres> listC = FonctionBase.allChapitres(rep.getIdFormation());
+             ArrayList<Quiz> listQ= FonctionBase.allQuiz(rep.getIdFormation());
+             ArrayList<Zoom> listZ = FonctionBase.allZooms(rep.getIdFormation());
+    // Définissez le nombre total d'élèves pour cette formation
+              
+ 
+            // Définir le formateur dans l'objet Formation
+            rep.setMonFormateur(formateur);
+            rep.setMeschapitres(listC);
+            rep.setMesQuizs(listQ);
+            rep.setMeszooms(listZ);
         }
     } finally {
         // Fermeture du ResultSet
-        if (resultSet != null) {
+        if (result != null) {
             try {
-                resultSet.close();
+                result.close();
             } catch (SQLException ex) {
                 ex.printStackTrace(); // Gérer l'exception de fermeture
             }
@@ -629,6 +921,7 @@ public static Formation MonFormation(int parseInt) throws Exception {
 
     return rep;
 }
+
 
 
 public static ArrayList<Profession> AllProfession() throws Exception {

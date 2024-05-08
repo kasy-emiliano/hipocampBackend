@@ -152,6 +152,23 @@ public ResponseEntity<String>ChangerMdp(@RequestParam("token") String token,@Req
 
         return  ResponseEntity.ok(rep);
     }
+    @GetMapping ("/MesFormationSuiviesDeux")
+    public ResponseEntity<ArrayList<Formation>> MesFormationSuiviesDeux(@RequestParam("token") String token ,@RequestParam("nomespace") String nomespace ) throws Exception {
+
+        Apprenant A=FonctionBase.selectWithTokenConnecter(token);
+        ArrayList<Formation>rep=FonctionBase.MesFormationSuiviesDeux(A.getIdApprenant(),nomespace);
+
+        Progression p=new Progression();
+
+        for (int i=0;i<rep.size();i++){
+
+
+            rep.get(i).setProgres(p.progresssionA(A.getIdApprenant(),rep.get(i).getIdFormation()));
+
+        }
+
+        return  ResponseEntity.ok(rep);
+    }
 
 
 
@@ -279,5 +296,10 @@ ArrayList<Details>rep=FonctionBase.StatAmd(c,Integer.parseInt(annee),Integer.par
         c.close();
         return  ResponseEntity.ok(rep);
     }
-
+  @GetMapping ("/idApprenant")
+    public ResponseEntity<ArrayList<Apprenant>> idApp(@RequestParam("token") String token  ) throws Exception {
+ ArrayList<Apprenant> com = new Apprenant().idApprenant(token);
+        return  ResponseEntity.ok(com);
+    } 
+   
 }

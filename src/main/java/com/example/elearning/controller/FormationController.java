@@ -39,7 +39,7 @@ D.setAllLangues(FonctionBase.allLangues());
     }
 
     @PostMapping ("/AjoutFormation")
-    public ResponseEntity<String> AjoutFormation(@RequestParam("token")String token, @RequestParam("idCategorie")String idCategorie, @RequestParam("typeAcces")String  typesAcces, @RequestParam("langues")String  langues, @RequestParam("titre")String  titre, @RequestParam("duree")String  duree,@RequestParam("unite")String  u, @RequestParam("resumer")String  resumer, @RequestParam("photo") MultipartFile file,@RequestParam("prix") String prix) throws Exception {
+    public ResponseEntity<String> AjoutFormation(@RequestParam("token")String token, @RequestParam("idCategorie")String idCategorie, @RequestParam("typeAcces")String  typesAcces, @RequestParam("langues")String  langues, @RequestParam("titre")String  titre, @RequestParam("duree")String  duree,@RequestParam("unite")String  u, @RequestParam("resumer")String  resumer, @RequestParam("photo") MultipartFile file,@RequestParam("prix") String prix,@RequestParam("etatPublication")String etatPublication) throws Exception {
 System.out.println("jojj");
         System.out.println("idCategorie:"+idCategorie);
         System.out.println("typesAcces:"+typesAcces);
@@ -82,7 +82,7 @@ System.out.println("jojj");
 
 
 
-        f.inserer(fo.getIdFormateur(),Integer.parseInt(idCategorie),Integer.parseInt(typesAcces),Integer.parseInt(langues),titre,duree,Integer.parseInt(u),resumer,filePath,p);
+        f.inserer(fo.getIdFormateur(),Integer.parseInt(idCategorie),Integer.parseInt(typesAcces),Integer.parseInt(langues),titre,duree,Integer.parseInt(u),resumer,filePath,p,Integer.parseInt(etatPublication));
 
 
 
@@ -94,7 +94,78 @@ System.out.println("jojj");
 
 int misyCondition=0;
 
-String sql="Select * from formation  join categorie on formation.idcategorie=categorie.idcategorie join typesacces on formation.typesacces=typesacces.idTypesAcces join langues on formation.langues=langues.idLangues join unite on formation.unite=unite.idUnite Where formation.etat=2 ";
+String sql="SELECT formation.*,categorie.nom AS categorie_nom,typesacces.nom AS types_acces_nom,langues.nom AS langues_nom,unite.nom AS unite_nom FROM formation JOIN categorie ON formation.idcategorie = categorie.idcategorie JOIN typesacces ON formation.typesacces = typesacces.idTypesAcces JOIN langues ON formation.langues = langues.idLangues JOIN unite ON formation.unite = unite.idUnite WHERE formation.etat = 2 ";
+
+
+        if(!categorie.equals("")){
+
+          misyCondition=1;
+        }
+
+
+        if(misyCondition==1) {
+
+            sql = sql + " AND Formation. idCategorie=" + Integer.parseInt(categorie);
+
+        }
+if(!TypesAcces.equals("")){
+
+    if(misyCondition==1){
+
+        sql=sql+" AND  Formation. TypesAcces=" + Integer.parseInt(TypesAcces);
+    }
+    else {
+
+        sql=sql+" AND  Formation. TypesAcces=" + Integer.parseInt(TypesAcces);
+
+    }
+
+
+}
+
+
+
+
+
+
+if(!mot.equals("")){
+    if((misyCondition==1) || (!TypesAcces.equals(""))){
+
+        sql=sql+" AND ( Formation.titre LIKE '%"+mot+"%' OR Formation.resumer LIKE '%"+mot+"%')";
+    }
+    else {
+
+        sql=sql+" AND Formation.titre LIKE '%"+mot+"%' OR Formation.resumer LIKE '%"+mot+"%'";
+
+    }
+
+}
+
+sql=sql+ " ORDER BY Formation.idFormation DESC  ";
+            System.out.println(sql);
+
+            Recherche rep=new Recherche();
+        Connection c=FonctionBase.connect();
+        rep.setRecherche(FonctionBase.RechercheFormation(sql,c));
+        DetailsFormation D=new DetailsFormation();
+c.close();
+
+        D.setAllCategorie(FonctionBase.AllCategorie());
+        D.setAllUnite(FonctionBase.allUnite());
+        D.setAllTypesAcces(FonctionBase.allTypesAcces());
+        D.setAllLangues(FonctionBase.allLangues());
+        rep.setF(D);
+
+        System.out.println("le");
+        return  ResponseEntity.ok(rep);
+    }
+    
+        @GetMapping ("/RechercheFormationDeux")
+    public ResponseEntity<Recherche> RechercheFormationDeux(@RequestParam("categorie") String categorie,@RequestParam("TypesAcces") String TypesAcces ,@RequestParam("mot") String mot) throws Exception {
+
+int misyCondition=0;
+
+String sql="SELECT formation.*,categorie.nom AS categorie_nom,typesacces.nom AS types_acces_nom,langues.nom AS langues_nom,unite.nom AS unite_nom FROM formation JOIN categorie ON formation.idcategorie = categorie.idcategorie JOIN typesacces ON formation.typesacces = typesacces.idTypesAcces JOIN langues ON formation.langues = langues.idLangues JOIN unite ON formation.unite = unite.idUnite WHERE formation.etat = 2 and formation.etatpublication= 1 ";
 
 
         if(!categorie.equals("")){
@@ -165,11 +236,19 @@ c.close();
 System.out.println(token);
        Formateur f=FonctionBase.selectWithTokenF(token);
 
-ArrayList<Formation>rep=FonctionBase.MesFormation(f.getIdFormateur());
+    ArrayList<Formation>rep=FonctionBase.MesFormation(f.getIdFormateur());
+
+        return  ResponseEntity.ok(rep);
+    }
+    @GetMapping ("/MesFormationNomEspace")
+    public ResponseEntity<ArrayList<Formation>> MesFormationNomEspace(@RequestParam("nomespace") String nomespace) throws Exception {
+
+ ArrayList<Formation>rep=new Formation().mesFormationEspace(nomespace);
 
         return  ResponseEntity.ok(rep);
     }
 
+     
     @GetMapping ("/MonFormation")
     public ResponseEntity<Formation> MonFormation(@RequestParam("idFormation") String idFormation  ) throws Exception {
 
