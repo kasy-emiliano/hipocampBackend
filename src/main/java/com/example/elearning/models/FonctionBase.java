@@ -732,6 +732,9 @@ public static ArrayList<Formation> RechercheFormation(String sql, Connection con
 }
 
  
+
+ 
+
 /*public static ArrayList<Formation> MesFormation(int idFormateur) throws Exception {
     String sql = "SELECT * FROM formation " +
                  "JOIN categorie ON formation.idcategorie = categorie.idcategorie " +

@@ -26,8 +26,17 @@ import com.example.elearning.models.pff;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -66,19 +75,26 @@ public class ExamensController {
     public ResponseEntity<String> AjoutExam(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String idFormationParam = request.getParameter("idFormation");
-        String timerparam = request.getParameter("timer");
+        //String timerparam = request.getParameter("timer");
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        String dateDebutString = request.getParameter("DateDebutExamen");
+        String dateFinString = request.getParameter("DateFinExamen");
+        
+        LocalDateTime dateDebut = LocalDateTime.parse(dateDebutString, inputFormatter);
+        LocalDateTime dateFin = LocalDateTime.parse(dateFinString, inputFormatter);
 
         // Vérifier si idFormationParam n'est pas null
         if (idFormationParam != null) {
             try {
                 int idFormation = Integer.parseInt(idFormationParam);
-                int timer = Integer.parseInt(timerparam);
+                //nt timer = Integer.parseInt(timerparam);
 
                 String TitreExamen = request.getParameter("TitreExamen");
-
+        Timestamp DateDebutExamen = Timestamp.valueOf(dateDebut);
+        Timestamp DateFinExamen = Timestamp.valueOf(dateFin);
                 Examens com = new Examens();
 
-                com.insertExamens(idFormation, TitreExamen,timer);
+                com.insertExamens(idFormation, TitreExamen,DateDebutExamen,DateFinExamen);
 
                 return ResponseEntity.ok("Commentaire ajouté avec succès");
 
@@ -214,6 +230,11 @@ for (int y=0;y<reto.size();y++){
  ArrayList<Examens> com = new Examens().ListeExamens(idFormation);
         return  ResponseEntity.ok(com);
     }
+    @GetMapping ("/LesExamensDispo")
+    public ResponseEntity<ArrayList<Examens>> LesExamensDispo(@RequestParam("idFormation") int idFormation  ) throws Exception {
+ ArrayList<Examens> com = new Examens().ListeExamensDispo(idFormation);
+        return  ResponseEntity.ok(com);
+    }
     
       @GetMapping ("/questionReponse")
     public ResponseEntity<ArrayList<QuestionReponse>> questionReponse(@RequestParam("examen_id") int examen_id  ) throws Exception {
@@ -226,6 +247,19 @@ for (int y=0;y<reto.size();y++){
  ArrayList<Examens> com = new Examens().Timer(idExamen);
         return  ResponseEntity.ok(com);
     }
+    
+    
+    @GetMapping("/isExamenDejaTermine")
+public ResponseEntity<Boolean> isExamenDejaTermine(@RequestParam("idExamen") int idExamen) {
+    try {
+        Examens com = new Examens();
+        boolean examenDejaTermine = com.isExamenDejaTermine(idExamen);
+        return ResponseEntity.ok(examenDejaTermine);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+}
+    
     @PostMapping("/AjoutCheckExamen")
 public ResponseEntity<String> CheckExamen(HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) throws Exception {
  String idExamenparam = request.getParameter("idExamen");
@@ -268,6 +302,12 @@ public ResponseEntity<String> CheckExamen(HttpServletRequest request, HttpServle
         return ResponseEntity.badRequest().body("Paramètre idFormation manquant");
     }
     
+}
+ @PostMapping("/demarrerCompteARebours")
+public ResponseEntity<String> demarrerCompteARebours(@RequestParam("idExamen") int idExamen) {
+    
+    Examens.demarrerCompteARebours(idExamen);
+    return ResponseEntity.ok("Compte à rebours démarré avec succès !");
 }
 
 }

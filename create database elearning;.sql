@@ -206,6 +206,13 @@ CREATE TABLE IF NOT EXISTS public.Formateur
     dateDajout date,
     phrasecertificat varchar,
     nomespace varchar,
+    logo varchar,
+    couleurPrincipale varchar,
+    couleurArrierePlan varchar,
+    CouleurTitre varchar,
+    couleurText varchar,
+    couleurBouton varchar,
+    couleurtextBouton varchar,
     foreign key (civilite) references civilite(idcivilite),
     foreign key (Profession) references Profession(idProfession),
     foreign key (modeDexercice) references modeDexercice(idmodeDexercice)
@@ -592,8 +599,6 @@ idcategorie,
 typesacces,langues,titre,duree,unite,resumer,pdc,token,etat,prix,datedajout,devalidation,dedemande
  from formation join categorie on formation.idcategorie=categorie.idcategorie join typesacces on formation.typesacces=typesacces.idTypesAcces join langues on formation.langues=langues.idLangues join unite on formation.unite=unite.idUnite;
 
- idformation | idformateur | idcategorie | typesacces | langues |                                                 titre                                                  | duree | unite |                                                    resumer                                                    |                     pdc                      |                    token                    | etat | prix | datedajout | devalidation | dedemande
- 
 
     
 
@@ -603,6 +608,8 @@ typesacces,langues,titre,duree,unite,resumer,pdc,token,etat,prix,datedajout,deva
     idApprenant int,
     messages Text,
     date timestamp default now(),
+    type int,
+    vue int,
     FOREIGN KEY (idFormateur) REFERENCES Formateur(idFormateur),
     FOREIGN KEY (idApprenant) REFERENCES Apprenant(idApprenant)
 );
@@ -622,29 +629,27 @@ insert into messages (idApprenant,senderName,messages) values(6,'bolt','salut ce
 
 
 
-create table PrivateChats(
-    idApprenant int,
-    idformateur int,
-        FOREIGN KEY (idFormateur) REFERENCES Formateur(idFormateur),
-    FOREIGN KEY (idApprenant) REFERENCES Apprenant(idApprenant)
-);
-
-insert into PrivateChats (idApprenant,idformateur)values(4,8);
-
-CREATE or replace VIEW messageFormation AS
+ 
+CREATE or replace VIEW messagePrive AS
 SELECT 
-    PrivateChats.idApprenant, 
+    messages.idMessage,
+    messages.messages,
+    messages.idApprenant, 
     Apprenant.Nom AS Nom_Apprenant, 
     Apprenant.Prenom AS Prenom_Apprenant,
-    PrivateChats.idFormateur, 
+    Apprenant.token as tokenApprenant,
+    messages.idFormateur, 
     Formateur.Nom AS Nom_Formateur, 
-    Formateur.Prenom AS Prenom_Formateur
+    Formateur.Prenom AS Prenom_Formateur,
+    Formateur.token as token,
+    messages.date,
+    messages.type
 FROM 
-    PrivateChats
+    messages
 LEFT JOIN 
-    Apprenant ON PrivateChats.idApprenant = Apprenant.idApprenant
+    Apprenant ON messages.idApprenant = Apprenant.idApprenant
 LEFT JOIN 
-    Formateur ON PrivateChats.idFormateur = Formateur.idFormateur;
+    Formateur ON messages.idFormateur = Formateur.idFormateur;
  
 
 
@@ -652,8 +657,10 @@ LEFT JOIN
 -------------+---------------+------------------+-------------+---------------+------------------+-------------+-----------------
 (0 rows)
 
-select*from messages where idformateur=8 and idApprenant=4 ;
-select idApprenant,max(date) from messages where idformateur=8 group by idApprenant;
+select*from messages where idformateur=10 and idApprenant=10 ;
+select idApprenant,nom_apprenant,prenom_apprenant,max(date) from messagePrive where idformateur=10 group by idApprenant,nom_apprenant,prenom_apprenant;
+
+select idApprenant,max(date) from messagePrive where idformateur=10  group by idApprenant;
 
 select idapprenant from apprenant where token='BYWJffyzQnBDlDfscjdfN1XPyEBM8Zz6ASXI5_IdS3k';
 
@@ -671,13 +678,13 @@ FOREIGN KEY (idFormation) REFERENCES Formation(idFormation)
 
 INSERT INTO Examens (idFormation, TitreExamen, DateDebutExamen, DateFinExamen)
 VALUES
-    (1, 'Examen de mathématiques avancées', '2024-05-10 09:00:00', '2024-05-10 12:00:00');
-    (2, 'Examen de physique quantique', '2024-05-15 14:00:00', '2024-05-15 17:00:00'),
+    (29, 'Examen de mathématiques avancées', '2024-05-15 10:47:00', '2024-05-15 10:48:00');
+    (2, 'Examen de physique quantique', '2024-05-09 22:55:00', '2024-05-09 22:57:00')
     (1, 'Examen de programmation orientée objet', '2024-05-20 10:00:00', '2024-05-20 13:00:00');
 
 SELECT EXTRACT(EPOCH FROM (DateFinExamen - DateDebutExamen)) AS DureeExamen_secondes
 FROM Examens
-WHERE idExamen = 12;
+WHERE idExamen = 19;
 
 
 
@@ -962,3 +969,30 @@ SELECT * FROM formation
 
 
                  SELECT * FROM formation JOIN categorie ON formation.idcategorie = categorie.idcategorie JOIN typesacces ON formation.typesacces = typesacces.idTypesAcces JOIN langues ON formation.langues = langues.idLangues JOIN unite ON formation.unite = unite.idUnite JOIN inscritFormation ON formation.idFormation = inscritFormation.idFormation Join formateur on formation.idformateur=formateur.idformateurWHERE formation.etat = 2 AND etatpublication=2 and formateur.nomespace='Cedi'and  inscritFormation.idApprenant = 3 ORDER BY idinscritFormation DESC;
+
+
+                 SELECT idApprenant, nom_apprenant, prenom_apprenant, messages,tokenApprenant, vue,type,date FROM messagePrive WHERE (idApprenant, date) IN (SELECT idApprenant, MAX(date) AS max_date FROM messagePrive WHERE idformateur = 10 GROUP BY idApprenant);
+SELECT idApprenant, nom_apprenant, prenom_apprenant, messages,tokenApprenant, date 
+FROM messagePrive 
+WHERE (idApprenant, date) IN (
+    SELECT idApprenant, MAX(date) AS max_date 
+    FROM messagePrive 
+    WHERE idformateur = 10 
+    GROUP BY idApprenant
+)
+ORDER BY date desc;
+
+SELECT COUNT(*) AS nombre_de_vues
+FROM (
+    SELECT idApprenant, nom_apprenant, prenom_apprenant, messages, tokenApprenant, vue,type, date
+    FROM messagePrive
+    WHERE (idApprenant, date) IN (
+        SELECT idApprenant, MAX(date) AS max_date
+        FROM messagePrive
+        WHERE idformateur = 10
+        GROUP BY idApprenant
+    )
+    AND vue = 0 and type=2
+) AS sous_requete;
+
+SELECT idApprenant, nom_apprenant, prenom_apprenant, messages,tokenApprenant,type,vue,date FROM messagePrive WHERE (idApprenant, date) IN (SELECT idApprenant, MAX(date) AS max_date FROM messagePrive WHERE idformateur =10 GROUP BY idApprenant)ORDER BY date desc;
