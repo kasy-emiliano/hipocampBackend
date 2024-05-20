@@ -202,6 +202,60 @@ public class Certificat {
         return listeDept;
     }
     
+    public ArrayList<Certificat> ListAdmis(int idFormation,int idExamen ) throws Exception {
+        ArrayList<Certificat> listeDept = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+           FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+
+            // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
+            String query = " SELECT SUM(note) AS noteApprenant,idApprenant,nom,prenom,idFormateur,NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,DateExamen,phraseCertificat FROM ResultatExamen WHERE idformation =? GROUP BY idApprenant,nom,prenom,idformateur, NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,DateExamen,phraseCertificat HAVING SUM(note) >= (SELECT SUM(note) / 2 AS noteExam FROM totalNoteExam WHERE idExamen =?) ";
+            statement = connection.prepareStatement(query);
+            // Paramètres de condition
+            statement.setInt(1, idFormation);
+            statement.setInt(2, idExamen);
+            result = statement.executeQuery();
+
+            while (result.next()) {
+                Certificat com = new Certificat();
+                com.setIdexamen(result.getInt("idexamen"));
+                com.setIdapprenant(result.getInt("idapprenant"));
+                com.setIdformation(result.getInt("idformation"));
+                com.setIdformateur(result.getInt("idformateur"));
+                com.setTitreformation(result.getString("titreformation"));
+                com.setNom(result.getString("nom"));
+                com.setPrenom(result.getString("prenom"));
+                com.setPrenomformateur(result.getString("prenomformateur"));
+                com.setNomorgannisme(result.getString("nomorgannisme"));
+                com.setNomformateur(result.getString("nomformateur"));
+                com.setNoteapprenant(result.getDouble("noteapprenant"));
+                com.setDateexamen(result.getDate("dateexamen"));
+                com.setPhraseCertificat(result.getString("phrasecertificat")); 
+
+                
+                listeDept.add(com);
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return listeDept;
+    }
+    
+    
 
 }
 

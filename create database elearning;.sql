@@ -678,7 +678,7 @@ FOREIGN KEY (idFormation) REFERENCES Formation(idFormation)
 
 INSERT INTO Examens (idFormation, TitreExamen, DateDebutExamen, DateFinExamen)
 VALUES
-    (29, 'Examen de mathématiques avancées', '2024-05-15 10:47:00', '2024-05-15 10:48:00');
+    (29, 'Examen de mathématiques avancées', '2024-05-16 15:11:00', '2024-05-16 15:30:00');
     (2, 'Examen de physique quantique', '2024-05-09 22:55:00', '2024-05-09 22:57:00')
     (1, 'Examen de programmation orientée objet', '2024-05-20 10:00:00', '2024-05-20 13:00:00');
 
@@ -996,3 +996,6 @@ FROM (
 ) AS sous_requete;
 
 SELECT idApprenant, nom_apprenant, prenom_apprenant, messages,tokenApprenant,type,vue,date FROM messagePrive WHERE (idApprenant, date) IN (SELECT idApprenant, MAX(date) AS max_date FROM messagePrive WHERE idformateur =10 GROUP BY idApprenant)ORDER BY date desc;
+
+
+SELECT SUM(note) AS noteApprenant,idApprenant,nom,prenom,idFormateur,NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,DateExamen,phraseCertificat FROM ResultatExamen WHERE idformation =27 GROUP BY idApprenant,nom,prenom,idformateur, NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,DateExamen,phraseCertificat HAVING SUM(note) >= (SELECT SUM(note) / 2 AS noteExam FROM totalNoteExam WHERE idExamen =61);

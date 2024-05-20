@@ -11,7 +11,9 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Examens {
 
@@ -361,31 +363,36 @@ public class Examens {
     
     return examenDejaTermine;
 }
-    
- private static Timestamp getExamEndTime(int idExamen) throws Exception {
+     
+     public Duration getExamTimeDifference(int idExamen) throws Exception {
         Connection connection = null;
         PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            // Utiliser votre logique de connexion à la base de données
-        FonctionBase connect = new FonctionBase();
-        connection = connect.connect();
+        ResultSet result = null;
 
-            // Requête pour récupérer l'heure de fin de l'examen
-            String query = "SELECT datefinexamen FROM Examens WHERE idExamen = ?";
+        try {
+            FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+
+            String query = "SELECT datefinexamen " +
+                           "FROM examens " +
+                           "WHERE idexamen = ?";
             statement = connection.prepareStatement(query);
             statement.setInt(1, idExamen);
-            resultSet = statement.executeQuery();
+            result = statement.executeQuery();
 
-            if (resultSet.next()) {
-                return resultSet.getTimestamp("datefinexamen");
+            if (result.next()) {
+                LocalDateTime datefinexamen = result.getTimestamp("datefinexamen").toLocalDateTime();
+                LocalDateTime now = LocalDateTime.now();
+
+                return Duration.between(now, datefinexamen);
             } else {
-                throw new Exception("L'examen avec l'ID " + idExamen + " n'a pas été trouvé.");
+                throw new Exception("Examen not found with id: " + idExamen);
             }
+        } catch (Exception e) {
+            throw e;
         } finally {
-            // Fermer les ressources
-            if (resultSet != null) {
-                resultSet.close();
+            if (result != null) {
+                result.close();
             }
             if (statement != null) {
                 statement.close();
@@ -395,29 +402,5 @@ public class Examens {
             }
         }
     }
- 
-    public static void demarrerCompteARebours(int idExamen) {
-        try {
-            // Récupérer l'heure actuelle
-            Date currentTime = new Date();
 
-            // Récupérer l'heure de fin de l'examen depuis la base de données
-            Timestamp examEndTime = getExamEndTime(idExamen);
-
-            // Calculer la différence de temps en millisecondes
-            long timeDifferenceInMillis = examEndTime.getTime() - currentTime.getTime();
-
-            // Démarrer le compte à rebours avec la différence de temps en millisecondes
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    // Action à effectuer lorsque le compte à rebours est terminé
-                    // Par exemple, mettre à jour l'état de l'examen comme terminé
-                }
-            }, timeDifferenceInMillis);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

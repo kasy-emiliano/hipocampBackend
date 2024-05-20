@@ -10,6 +10,7 @@ import com.example.elearning.models.Formateur;
 import com.example.elearning.models.Formation;
 import com.example.elearning.models.FormationCommentaire;
 import com.example.elearning.models.InsererQuestion;
+import com.example.elearning.models.MessagePrive;
 import com.example.elearning.models.NoteFormation;
 import com.example.elearning.models.QuestionExamPff;
 import com.example.elearning.models.QuestionExamen;
@@ -66,6 +67,9 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @CrossOrigin
 @Controller
@@ -178,51 +182,25 @@ System.out.println("ouigiuafisfdui");
     }
 
     
-    
-        @GetMapping("/PasserExamen")
-
-    public ResponseEntity<String> PasserExamen(@RequestParam("idExamen") String idExamen, String idQuestion,@RequestParam("idrep") String []idrep,@RequestParam("token") String token) throws Exception {
-
-        Apprenant A=FonctionBase.selectWithTokenConnecter(token);
-
+    @PostMapping("/PasserExamen")
+public ResponseEntity<String> passerExamen(@RequestBody ReponsesApprenant reponsesApprenant) throws Exception {
+    int idExamen = reponsesApprenant.getIdExamen();
+    List<Integer> idreponses = reponsesApprenant.getIdreponses();
+    String token = reponsesApprenant.getToken();
 ReponsesApprenant Qu=new ReponsesApprenant();
+
  
-
-ArrayList<ReponsesExamen> rep=new ArrayList<ReponsesExamen>();
-
-for (int i=0;i<idrep.length;i++){
-
-    rep.add(ReponsesExamen.Mareponse(Integer.parseInt(idrep[i])));
-}
-
-
-ArrayList<QuestionExamen> Q=QuestionExamen.mesQ(Integer.parseInt(idExamen));
-
-
-ArrayList<ReponsesExamen> reto=new ArrayList<ReponsesExamen>();
-
-for (int i=0;i<Q.size();i++){
-reto=new ArrayList<ReponsesExamen>();
-    for (int j=0;j< rep.size();j++){
-
-if(Q.get(i).getIdQuestion()==rep.get(j).getIdQuestion()){
-
-    reto.add(rep.get(j));
-}
+    Apprenant apprenant = FonctionBase.selectWithTokenConnecter(token);
+    if(apprenant == null) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
     }
 
-    if(Q.get(i).getMarina()>=reto.size()){
-
-for (int y=0;y<reto.size();y++){
-
-
-   Qu.insertReponsesApprenant(Integer.parseInt(idExamen),A.getIdApprenant(),rep.get(y).getIdReponse());
-
-}
+    for (Integer idReponse : idreponses) {
+        Qu.insertReponsesApprenant(idExamen, apprenant.getIdApprenant(), idReponse);
     }
+
+    return ResponseEntity.ok("Réponses envoyées avec succès.");
 }
-    return ResponseEntity.ok("ok");
-    }
     
     
        @GetMapping ("/LesExamens")
@@ -303,11 +281,30 @@ public ResponseEntity<String> CheckExamen(HttpServletRequest request, HttpServle
     }
     
 }
- @PostMapping("/demarrerCompteARebours")
-public ResponseEntity<String> demarrerCompteARebours(@RequestParam("idExamen") int idExamen) {
-    
-    Examens.demarrerCompteARebours(idExamen);
-    return ResponseEntity.ok("Compte à rebours démarré avec succès !");
-}
+ @GetMapping("/examTimer")
+    public ResponseEntity<String> getExamTimeDifference(@RequestParam("idExamen") int idExamen) {
+        try {
+             Examens exam=new Examens();
+            Duration difference = exam.getExamTimeDifference(idExamen);
+            String formattedDifference = formatDuration(difference);
 
+            return ResponseEntity.ok(formattedDifference);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Internal server error: " + e.getMessage());
+        }
+    }
+ private String formatDuration(Duration duration) {
+        long days = duration.toDays();
+        long hours = duration.toHours() % 24;
+        long minutes = duration.toMinutes() % 60;
+        long seconds = duration.getSeconds() % 60;
+        return String.format("%d days, %d hours, %d minutes, %d seconds", days, hours, minutes, seconds);
+    }
+ 
+ @GetMapping("/nombreAccepte")
+    public ResponseEntity<Integer> nombreAccepte(@RequestParam("idQuestion") int idQuestion) throws Exception {
+
+        int count = new ReponsesExamen().nombreAccepte(idQuestion);
+        return ResponseEntity.ok(count);
+    }
 }

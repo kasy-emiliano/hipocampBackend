@@ -168,6 +168,42 @@ public class ReponsesExamen {
 
     return rep;
 }
+     
+        public int nombreAccepte(int idQuestion) throws Exception {
+    int count = 0;
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet result = null;
+
+    try {
+        FonctionBase connect = new FonctionBase();
+        connection = connect.connect();
+
+        String query = "select count(note) as nombreAccepte from reponsesexamen where idquestion=? and  note !=0";
+        statement = connection.prepareStatement(query);
+        statement.setInt(1, idQuestion);
+        result = statement.executeQuery();
+
+        if (result.next()) {
+            count = result.getInt("nombreAccepte");
+        }
+    } catch (Exception e) {
+        throw e;
+    } finally {
+        if (result != null) {
+            result.close();
+        }
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
+    }
+    return count;
+}
+
+
 
      
  }

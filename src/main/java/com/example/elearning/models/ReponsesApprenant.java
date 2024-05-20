@@ -2,12 +2,31 @@ package com.example.elearning.models;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.List;
 
 public class ReponsesApprenant {
    private int  idReponseApprenant;
    private int idExamen;
    private int idApprenant ;
    private int  idReponse;
+   private List<Integer> idreponses;
+   private String token;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public List<Integer> getIdreponses() {
+        return idreponses;
+    }
+
+    public void setIdreponses(List<Integer> idreponses) {
+        this.idreponses = idreponses;
+    }
 
     public int getIdReponseApprenant() {
         return idReponseApprenant;
