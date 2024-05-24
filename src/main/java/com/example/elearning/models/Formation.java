@@ -449,4 +449,46 @@ public class Formation {
         return listeDept;
     }
 
+    
+        public ArrayList<Formation> Nomformation (int idFormation) throws Exception {
+        ArrayList<Formation> listeDept = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+            FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+
+            // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
+            String query = "select titre from formation where idformation=? ";
+            statement = connection.prepareStatement(query);
+            // Paramètres de condition
+            statement.setInt(1, idFormation);
+            result = statement.executeQuery();
+
+            while (result.next()) {
+                Formation com = new Formation();
+                com.setTitre(result.getString("titre"));
+ 
+
+                listeDept.add(com);
+
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return listeDept;
+    }
+
 }

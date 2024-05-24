@@ -999,3 +999,28 @@ SELECT idApprenant, nom_apprenant, prenom_apprenant, messages,tokenApprenant,typ
 
 
 SELECT SUM(note) AS noteApprenant,idApprenant,nom,prenom,idFormateur,NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,DateExamen,phraseCertificat FROM ResultatExamen WHERE idformation =27 GROUP BY idApprenant,nom,prenom,idformateur, NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,DateExamen,phraseCertificat HAVING SUM(note) >= (SELECT SUM(note) / 2 AS noteExam FROM totalNoteExam WHERE idExamen =61);
+
+ 
+select sum(note) as note from reponsesexamen join questionexamen on reponsesexamen.idquestion=questionexamen.idquestion where idExamen=61;
+
+***********Pourcentage admis************
+
+WITH totalInscrits AS (
+    SELECT COUNT(*) as total
+    FROM inscritformation
+    WHERE idformation = 27
+),
+totalAdmis AS (
+    SELECT COUNT(*) as total
+    FROM (
+        SELECT idApprenant
+        FROM resultatexamen
+        WHERE idformation = 27
+        GROUP BY idApprenant
+        HAVING SUM(note) >= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =61)
+    ) as admis
+)
+SELECT (totalAdmis.total::float / totalInscrits.total::float) * 100 AS pourcentageAdmis
+FROM totalInscrits, totalAdmis;
+
+*****************************

@@ -369,6 +369,13 @@ System.out.println("gratos");
     }
 
 
-
+       @GetMapping ("/Nomformation")
+    public ResponseEntity<ArrayList<Formation>> Nomformation(@RequestParam("idFormation") int idFormation) throws Exception {
+        
+      ArrayList<Formation> com = new Formation().Nomformation(idFormation);
+ 
+        return  ResponseEntity.ok(com);         
+} 
+ 
 
 }

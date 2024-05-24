@@ -79,4 +79,28 @@ public class CertificatCotroller {
         return  ResponseEntity.ok(com);         
 } 
  
+        @GetMapping ("/ListAdmis")
+    public ResponseEntity<ArrayList<Certificat>> ListAdmis(@RequestParam("idExamen") int idExamen,@RequestParam("idFormation") int idFormation) throws Exception {
+        
+      ArrayList<Certificat> com = new Certificat().ListAdmis(idFormation,idExamen);
+ 
+        return  ResponseEntity.ok(com);         
+} 
+
+        @GetMapping("/noteTotal")
+    public ResponseEntity<Integer> noteTotal(@RequestParam("idExamen") int idExamen) throws Exception {
+        
+
+        int count = new Certificat().noteTotal(idExamen);
+        return ResponseEntity.ok(count);
+    }
+        @GetMapping("/pourcentage")
+    public ResponseEntity<Double> pourcentage(@RequestParam("idFormation") int idFormation,@RequestParam("idExamen") int idExamen) throws Exception {
+        
+
+        double pourcentage = new Certificat().pourcentage(idFormation,idExamen);
+        return ResponseEntity.ok(pourcentage);
+    }
+
+    
 }

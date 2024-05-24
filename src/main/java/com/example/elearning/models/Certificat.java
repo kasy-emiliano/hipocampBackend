@@ -24,6 +24,15 @@ public class Certificat {
     String titreformation;
     Date dateexamen;
     private String phraseCertificat;
+    int pourcentageAdmis;
+
+    public int getPourcentageAdmis() {
+        return pourcentageAdmis;
+    }
+
+    public void setPourcentageAdmis(int pourcentageAdmis) {
+        this.pourcentageAdmis = pourcentageAdmis;
+    }
 
 
     public String getPhraseCertificat() {
@@ -234,9 +243,7 @@ public class Certificat {
                 com.setNomformateur(result.getString("nomformateur"));
                 com.setNoteapprenant(result.getDouble("noteapprenant"));
                 com.setDateexamen(result.getDate("dateexamen"));
-                com.setPhraseCertificat(result.getString("phrasecertificat")); 
 
-                
                 listeDept.add(com);
             }
         } catch (Exception e) {
@@ -255,7 +262,134 @@ public class Certificat {
         return listeDept;
     }
     
+    public ArrayList<Certificat> note(int idExamen) throws Exception {
+        ArrayList<Certificat> listeDept = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+           FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+
+            // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
+            String query = " select sum(note) as note from reponsesexamen join questionexamen on reponsesexamen.idquestion=questionexamen.idquestion where idExamen=? ";
+            statement = connection.prepareStatement(query);
+            // Paramètres de condition
+            statement.setInt(1, idExamen);
+            result = statement.executeQuery();
+
+            while (result.next()) {
+                Certificat com = new Certificat();
+                com.setNoteapprenant(result.getDouble("note"));
+                listeDept.add(com);
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return listeDept;
+    }
     
+        public int noteTotal(int idExamen) throws Exception {
+    int note = 0;
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet result = null;
+
+    try {
+        FonctionBase connect = new FonctionBase();
+        connection = connect.connect();
+
+        String query = "select sum(note) as note from reponsesexamen join questionexamen on reponsesexamen.idquestion=questionexamen.idquestion where idExamen=?";
+        statement = connection.prepareStatement(query);
+        statement.setInt(1, idExamen);
+        result = statement.executeQuery();
+
+        if (result.next()) {
+            
+            note = result.getInt("note");
+        }
+    } catch (Exception e) {
+        throw e;
+    } finally {
+        if (result != null) {
+            result.close();
+        }
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
+    }
+    return note;
+}
+
+    
+        public double pourcentage(int idFormation,int idExamen) throws Exception {
+    double note = 0;
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet result = null;
+
+    try {
+        FonctionBase connect = new FonctionBase();
+        connection = connect.connect();
+
+        String query = "WITH totalInscrits AS (\n" +
+"    SELECT COUNT(*) as total\n" +
+"    FROM inscritformation\n" +
+"    WHERE idformation = ?\n" +
+"),\n" +
+"totalAdmis AS (\n" +
+"    SELECT COUNT(*) as total\n" +
+"    FROM (\n" +
+"        SELECT idApprenant\n" +
+"        FROM resultatexamen\n" +
+"        WHERE idformation = ?\n" +
+"        GROUP BY idApprenant\n" +
+"        HAVING SUM(note) >= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =?)\n" +
+"    ) as admis\n" +
+")\n" +
+"SELECT (totalAdmis.total::float / totalInscrits.total::float) * 100 AS pourcentageAdmis\n" +
+"FROM totalInscrits, totalAdmis;";
+        
+        statement = connection.prepareStatement(query);
+        
+        statement.setInt(1, idFormation);
+        statement.setInt(2, idFormation);
+        statement.setInt(3, idExamen);
+        result = statement.executeQuery();
+
+        if (result.next()) {
+            
+            note = result.getInt("pourcentageadmis");
+        }
+    } catch (Exception e) {
+        throw e;
+    } finally {
+        if (result != null) {
+            result.close();
+        }
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
+    }
+    return note;
+}
 
 }
 
