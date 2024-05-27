@@ -11,8 +11,8 @@ import java.util.Date;
 public class FonctionBase {
 
     public static Connection connect() throws Exception {
-        //String url = "jdbc:postgresql://viaduct.proxy.rlwy.net:15614/railway?user=postgres&password=eaDeaAbcGb6dFF4F61-A5c6E6Eg4ccCe&charSet=UTF-8";
-        String url = "jdbc:postgresql://localhost:5432/elearning?user=postgres&password=cedric10&charSet=UTF-8";
+        String url = "jdbc:postgresql://viaduct.proxy.rlwy.net:15614/railway?user=postgres&password=eaDeaAbcGb6dFF4F61-A5c6E6Eg4ccCe&charSet=UTF-8";
+        //String url = "jdbc:postgresql://localhost:5432/elearning?user=postgres&password=cedric10&charSet=UTF-8";
 
         Connection connection;
         connection = DriverManager.getConnection(url);
