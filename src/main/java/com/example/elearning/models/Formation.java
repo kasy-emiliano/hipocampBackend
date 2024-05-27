@@ -42,6 +42,25 @@ public class Formation {
     private String nomespace;
     private int etatPublication;
 
+        private double moyenne_note;
+        private double tauxreussite;
+
+    public double getTauxreussite() {
+        return tauxreussite;
+    }
+
+    public void setTauxreussite(double tauxreussite) {
+        this.tauxreussite = tauxreussite;
+    }
+
+    public double getMoyenne_note() {
+        return moyenne_note;
+    }
+
+    public void setMoyenne_note(double moyenne_note) {
+        this.moyenne_note = moyenne_note;
+    }
+    
     public int getEtatPublication() {
         return etatPublication;
     }

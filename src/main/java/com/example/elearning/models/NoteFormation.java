@@ -148,16 +148,6 @@ public class NoteFormation {
         return moyenne;
     }
 
-        public ArrayList<Commentaire> findCommentaireInviduel() throws Exception {
-        ArrayList<Commentaire> listeEmp = GenericDAO.findBySql(new Commentaire(), "select * from Commentaire where type=1",  new FonctionBase().connect());
-        return listeEmp;
-    }
-
-    
-    public ArrayList<Commentaire> findCommentaireCollectif() throws Exception {
-        ArrayList<Commentaire> listeEmp = GenericDAO.findBySql(new Commentaire(), "select * from Commentaire where type=2",  new FonctionBase().connect());
-        return listeEmp;
-    }
 
   
       public void insertnoteformation(int idFormation, int idApprenant, int note) throws Exception {
@@ -250,36 +240,6 @@ public class NoteFormation {
         }
     }
 
-    public int findDCodeDisp(String code) throws Exception {
-        int listeBandCommande = 0;
-        Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet result = null;
-        try {
-            FonctionBase connect = new FonctionBase();
-            connection = connect.connect();
-            statement = connection.prepareStatement("select id from Commentaire where code=?");
-            statement.setString(1, code);
-            result = statement.executeQuery();
-            while (result.next()) {
-               listeBandCommande=result.getInt("id");
-               
-            }
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            if (result != null) {
-                result.close();
-            }
-            if (statement != null) {
-                statement.close();
-            }
-            if (connection != null) {
-                connection.close();
-            }
-        }
-        return listeBandCommande;
-    }
 
     
     //*********************UPDATE*****************

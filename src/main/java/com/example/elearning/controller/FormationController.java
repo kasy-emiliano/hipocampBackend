@@ -378,4 +378,24 @@ System.out.println("gratos");
 } 
  
 
+    @GetMapping ("/MesFormationPlusNotee")
+    public ResponseEntity<ArrayList<Formation>> MesFormationPlusNotee(@RequestParam("token") String token  ) throws Exception {
+System.out.println(token);
+       Formateur f=FonctionBase.selectWithTokenF(token);
+
+    ArrayList<Formation>rep=Formateur.MesFormationPlusNotee(f.getIdFormateur());
+
+        return  ResponseEntity.ok(rep);
+    }
+    
+    @GetMapping ("/tauxreussite")
+    public ResponseEntity<ArrayList<Formation>> tauxreussite(@RequestParam("token") String token  ) throws Exception {
+System.out.println(token);
+       Formateur f=FonctionBase.selectWithTokenF(token);
+
+    ArrayList<Formation>rep=Formateur.tauxReussiteParFormation(f.getIdFormateur());
+
+        return  ResponseEntity.ok(rep);
+    }
+    
 }

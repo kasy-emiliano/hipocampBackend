@@ -46,6 +46,7 @@ public class Formateur {
     private String couleurText ;
     private String couleurBouton ;
     private String couleurtextBouton ; 
+
     
     public String getLogo() {
         return logo;
@@ -740,4 +741,140 @@ public class Formateur {
     }
     
      
+        public static ArrayList<Formation> MesFormationPlusNotee(int idFormateur) throws Exception {
+        ArrayList<Formation> listeDept = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+            FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+
+            // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
+            String sql ="SELECT formation.*, \n" +
+"       COALESCE(moyennes.moyenne_note, 0) AS moyenne_note\n" +
+"FROM formation\n" +
+" \n" +
+"LEFT JOIN (\n" +
+"    SELECT idformation, AVG(note) AS moyenne_note\n" +
+"    FROM noteformation\n" +
+"    GROUP BY idformation\n" +
+") moyennes ON formation.idformation = moyennes.idformation\n" +
+"WHERE idFormateur = ?\n" +
+"ORDER BY moyenne_note DESC;";
+            statement = connection.prepareStatement(sql);
+            // Paramètres de condition
+            statement.setInt(1, idFormateur);
+            result = statement.executeQuery();
+
+            while (result.next()) {
+                Formation com = new Formation();
+
+                com.setIdFormation(result.getInt("idFormation"));
+                com.setIdFormateur(result.getInt("idformateur"));
+                com.setIdCategorie(result.getInt("idcategorie"));
+                com.setTypesAcces(result.getInt("typesacces"));
+                com.setLangues(result.getInt("langues"));
+                com.setTitre(result.getString("titre"));
+                com.setDuree(result.getString("duree"));
+                com.setUnite(result.getInt("unite"));
+                com.setResumer(result.getString("resumer"));
+                com.setToken(result.getString("token"));
+                com.setEtat(result.getInt("etat"));
+                com.setPrix(result.getString("prix"));
+                com.setDateDajout(result.getString("datedajout"));
+                com.setDevalidation(result.getString("devalidation"));
+                com.setDedemande(result.getString("dedemande")); 
+                com.setEtatPublication(result.getInt("etatPublication"));
+                com.setMoyenne_note(result.getDouble("moyenne_note"));
+            
+                listeDept.add(com);
+
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return listeDept;
+    }
+
+        
+                public static ArrayList<Formation> tauxReussiteParFormation(int idFormateur) throws Exception {
+        ArrayList<Formation> listeDept = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+            FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+
+            // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
+            String sql ="WITH totalInscrits AS (\n" +
+"    SELECT idformation, COUNT(*) AS totalInscrits\n" +
+"    FROM inscritformation\n" +
+"    GROUP BY idformation\n" +
+"),\n" +
+"totalAdmis AS (\n" +
+"    SELECT re.idformation, COUNT(DISTINCT re.idApprenant) AS totalAdmis\n" +
+"    FROM resultatexamen re\n" +
+"    JOIN Examens ex ON re.idExamen = ex.idExamen\n" +
+"    GROUP BY re.idformation\n" +
+"    HAVING SUM(re.note) >= (\n" +
+"        SELECT SUM(note) / 2\n" +
+"        FROM resultatexamen\n" +
+"        WHERE idformation = re.idformation\n" +
+"    )\n" +
+")\n" +
+"SELECT \n" +
+"    f.idformation, \n" +
+"    f.titre,\n" +
+"    COALESCE((ta.totalAdmis::float / ti.totalInscrits::float) * 100, 0) AS tauxReussite\n" +
+"FROM formation f\n" +
+"LEFT JOIN totalInscrits ti ON f.idformation = ti.idformation\n" +
+"LEFT JOIN totalAdmis ta ON f.idformation = ta.idformation\n" +
+"where idformateur=?\n" +
+"ORDER BY tauxReussite DESC;";
+            statement = connection.prepareStatement(sql);
+            // Paramètres de condition
+            statement.setInt(1, idFormateur);
+            result = statement.executeQuery();
+
+            while (result.next()) {
+                Formation com = new Formation();
+
+                com.setIdFormation(result.getInt("idFormation"));
+                com.setTitre(result.getString("titre"));
+                com.setTauxreussite(result.getDouble("tauxreussite"));
+            
+                listeDept.add(com);
+
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return listeDept;
+    }
+
+        
 }

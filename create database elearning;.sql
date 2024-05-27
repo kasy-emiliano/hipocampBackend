@@ -1024,3 +1024,44 @@ SELECT (totalAdmis.total::float / totalInscrits.total::float) * 100 AS pourcenta
 FROM totalInscrits, totalAdmis;
 
 *****************************
+
+SELECT formation.*, 
+       COALESCE(moyennes.moyenne_note, 0) AS moyenne_note
+FROM formation
+ 
+LEFT JOIN (
+    SELECT idformation, AVG(note) AS moyenne_note
+    FROM noteformation
+    GROUP BY idformation
+) moyennes ON formation.idformation = moyennes.idformation
+WHERE idFormateur = 10
+ORDER BY moyenne_note DESC;
+
+
+
+WITH totalInscrits AS (
+    SELECT idformation, COUNT(*) AS totalInscrits
+    FROM inscritformation
+    GROUP BY idformation
+),
+totalAdmis AS (
+    SELECT re.idformation, COUNT(DISTINCT re.idApprenant) AS totalAdmis
+    FROM resultatexamen re
+    JOIN Examens ex ON re.idExamen = ex.idExamen
+    GROUP BY re.idformation
+    HAVING SUM(re.note) >= (
+        SELECT SUM(note) / 2
+        FROM resultatexamen
+        WHERE idformation = re.idformation
+    )
+)
+SELECT 
+    f.idformation, 
+    f.titre,
+    COALESCE((ta.totalAdmis::float / ti.totalInscrits::float) * 100, 0) AS tauxReussite
+FROM formation f
+LEFT JOIN totalInscrits ti ON f.idformation = ti.idformation
+LEFT JOIN totalAdmis ta ON f.idformation = ta.idformation
+where idformateur=10
+ORDER BY tauxReussite DESC;
+
