@@ -158,7 +158,7 @@ CREATE TABLE IF NOT EXISTS public.Apprenant
     foreign key (modeDexercice) references modeDexercice(idmodeDexercice)
 );
 
-insert into Apprenant(idApprenant,nom,Prenom,email,mdp,Profession,civilite,modeDexercice,numero,datenaissance,token,etatCompte,dateDajout)values(1,'Cedric','Bolt','cedric@gmail.com','cedric',8,1,1,'0323212321','02-02-2002','abc',1,'16-01-2024');
+insert into Apprenant(idApprenant,nom,Prenom,email,mdp,Profession,civilite,modeDexercice,numero,token,etatCompte)values(1,'Cedric','Bolt','cedric@gmail.com','cedric',8,1,1,'0323212321','abc',1);
 
 
 
@@ -218,7 +218,7 @@ CREATE TABLE IF NOT EXISTS public.Formateur
     foreign key (modeDexercice) references modeDexercice(idmodeDexercice)
 );
 
-insert into Formateur(nom,Prenom,email,mdp,NomOrgannisme,ville,civilite,Profession,modeDexercice,bio,numero,datenaissance,facebook,linkedin,token,etatCompte,Pdp,dateDajout)values('Kasy','Emiliano','kasy@gmail.com','kasy','Kaiamba','Tamatave',2,10,1,'Professeur Kasy','0343212321','2024-01-16','Kasy Jr','KasyJr','def',1,'sary.jpg','2024-01-16');
+insert into Formateur(nom,Prenom,email,mdp,NomOrgannisme,ville,civilite,Profession,modeDexercice,bio,numero,facebook,linkedin,token,etatCompte,Pdp)values('Kasy','Emiliano','kasy@gmail.com','kasy','Kaiamba','Tamatave',2,10,1,'Professeur Kasy','0343212321','Kasy Jr','KasyJr','def',1,'sary.jpg');
 
 CREATE TABLE IF NOT EXISTS public.unite
 (
@@ -591,11 +591,9 @@ CREATE TABLE IF NOT EXISTS public.DeleteCategorie
 );
 
 CREATE VIEW MesFormation AS
-
 select
 idformation,
 idformateur,
-idcategorie,
 typesacces,langues,titre,duree,unite,resumer,pdc,token,etat,prix,datedajout,devalidation,dedemande
  from formation join categorie on formation.idcategorie=categorie.idcategorie join typesacces on formation.typesacces=typesacces.idTypesAcces join langues on formation.langues=langues.idLangues join unite on formation.unite=unite.idUnite;
 
@@ -643,7 +641,8 @@ SELECT
     Formateur.Prenom AS Prenom_Formateur,
     Formateur.token as token,
     messages.date,
-    messages.type
+    messages.type,
+    messages.vue
 FROM 
     messages
 LEFT JOIN 
@@ -671,8 +670,8 @@ create Table Examens(
 idExamen serial primary key,
 idFormation int,
 TitreExamen text,
-DateDebutExamen timestamp (),
-DateFinExamen timestamp (),
+DateDebutExamen timestamp,
+DateFinExamen timestamp,
 FOREIGN KEY (idFormation) REFERENCES Formation(idFormation)
 );
 
@@ -788,7 +787,7 @@ FROM ReponsesApprenant ra
 INNER JOIN ReponsesExamen re ON ra.idReponse = re.idReponse
 INNER JOIN public.Apprenant a ON ra.idApprenant = a.idApprenant
 INNER JOIN Examens e ON ra.idExamen = e.idExamen
-INNER JOIN Formation f ON e.idFormation = f.idFormation 
+INNER JOIN Formation f ON e.idFormation = f.idFormation; 
 where ra.idExamen=12;
 
 
@@ -863,30 +862,30 @@ FOREIGN KEY (idExamen) REFERENCES examens(idExamen)
 );
 
 
-CREATE or replace VIEW ResultatExamen AS
-SELECT a.idApprenant,
-       a.Nom,
-       a.Prenom,
-       a.email,
-       ra.idReponse,
-       ra.idExamen AS idExamen,
-       re.Reponse AS ReponseApprenant,
-       re.note,
-       f.idFormation,
-       f.Titre AS TitreFormation,
-       e.TitreExamen,
-       e.DateExamen,
-       ft.idformateur,
-       ft.nom as NomFormateur,
-       ft.prenom as PrenomFormateur,
-       ft.nomorgannisme,
-       ft.phraseCertificat
-FROM ReponsesApprenant ra
-INNER JOIN ReponsesExamen re ON ra.idReponse = re.idReponse
-INNER JOIN public.Apprenant a ON ra.idApprenant = a.idApprenant
-INNER JOIN Examens e ON ra.idExamen = e.idExamen
-INNER JOIN Formation f ON e.idFormation = f.idFormation
-INNER JOIN Formateur ft ON f.idFormateur = ft.idFormateur;
+    CREATE or replace VIEW ResultatExamen AS
+    SELECT a.idApprenant,
+        a.Nom,
+        a.Prenom,
+        a.email,
+        ra.idreponse,
+        ra.idExamen AS idExamen,
+        re.Reponse AS ReponseApprenant,
+        re.note,
+        f.idFormation,
+        f.Titre AS TitreFormation,
+        e.TitreExamen,
+        e.datedebutexamen,
+        ft.idformateur,
+        ft.nom as NomFormateur,
+        ft.prenom as PrenomFormateur,
+        ft.nomorgannisme,
+        ft.phraseCertificat
+    FROM ReponsesApprenant ra
+    INNER JOIN ReponsesExamen re ON ra.idReponse = re.idReponse
+    INNER JOIN public.Apprenant a ON ra.idApprenant = a.idApprenant
+    INNER JOIN Examens e ON ra.idExamen = e.idExamen
+    INNER JOIN Formation f ON e.idFormation = f.idFormation
+    INNER JOIN Formateur ft ON f.idFormateur = ft.idFormateur;
 
 
 /*****peut etre liste*****/
