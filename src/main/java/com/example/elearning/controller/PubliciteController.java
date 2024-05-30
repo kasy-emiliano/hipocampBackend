@@ -34,7 +34,7 @@ public class PubliciteController {
 
     @PostMapping("/AjoutPublicite")
     public ResponseEntity<String> AjoutPublicite(HttpServletRequest request,
-            HttpServletResponse response, @RequestParam("sary") MultipartFile file) throws Exception {
+            HttpServletResponse response, @RequestParam("image") MultipartFile file) throws Exception {
 
         DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         String dateDebutString = request.getParameter("datedebut");
