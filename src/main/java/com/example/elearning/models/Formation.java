@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -41,9 +42,18 @@ public class Formation {
     private int totalEleve;
     private String nomespace;
     private int etatPublication;
-
+    
         private double moyenne_note;
         private double tauxreussite;
+        private double sommeDroitPaye;
+
+    public double getSommeDroitPaye() {
+        return sommeDroitPaye;
+    }
+
+    public void setSommeDroitPaye(double sommeDroitPaye) {
+        this.sommeDroitPaye = sommeDroitPaye;
+    }
 
     public double getTauxreussite() {
         return tauxreussite;
@@ -508,6 +518,42 @@ public class Formation {
             }
         }
         return listeDept;
+    }
+        
+        public double prixFormation(int idFormation) throws Exception {
+        double prixFormation = 0;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+          FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+            String query = "select prix from formation where idformation=?";
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, idFormation);
+            result = statement.executeQuery();
+            if (result.next()) {
+                prixFormation = result.getDouble("prix");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return prixFormation;
     }
 
 }

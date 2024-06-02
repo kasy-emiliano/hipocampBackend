@@ -38,6 +38,15 @@ public class MessagePrive {
     private String nom_formateur;
     private String prenom_formateur;
     private String tokenApprenant;
+    private String token;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public int getVue() {
         return vue;
@@ -215,6 +224,57 @@ public class MessagePrive {
         return listeDept;
     }    
     
+      public ArrayList<MessagePrive> MessagePriApp(int idApprenant) throws Exception {
+        ArrayList<MessagePrive> listeDept = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+           FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+
+            // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
+            String query = "    SELECT idformateur,idApprenant,nom_formateur ,prenom_formateur, messages,token,vue,type,date FROM messagePrive WHERE (idFormateur, date) IN (SELECT idformateur, MAX(date) AS max_date FROM messagePrive WHERE idapprenant =? GROUP BY idformateur)ORDER BY date desc;";
+            statement = connection.prepareStatement(query);
+            // Paramètres de condition
+            statement.setInt(1, idApprenant);
+            result = statement.executeQuery();
+
+            while (result.next()) {
+                MessagePrive com = new MessagePrive();
+                com.setIdFormateur(result.getInt("idformateur"));
+                com.setIdApprenant(result.getInt("idapprenant")); 
+                com.setVue(result.getInt("vue")); 
+                com.setType(result.getInt("type")); 
+                //com.setIdMessage(result.getInt("idmessage")); 
+                //com.setNom_apprenant(result.getString("nom_apprenant")); 
+                com.setNom_formateur(result.getString("nom_formateur")); 
+                //com.setPrenom_apprenant(result.getString("Prenom_apprenant")); 
+                com.setPrenom_formateur(result.getString("Prenom_formateur")); 
+                //com.setTokenApprenant(result.getString("tokenapprenant")); 
+                com.setToken(result.getString("token")); 
+                com.setMessage(result.getString("messages")); 
+                com.setDate(result.getTimestamp("date")); 
+ 
+                
+                listeDept.add(com);
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return listeDept;
+    }    
     public static ArrayList<MessagePrive> ListMessagePri(int idFormateur,int idApprenant) throws Exception {
         ArrayList<MessagePrive> listeDept = new ArrayList<>();
         Connection connection = null;

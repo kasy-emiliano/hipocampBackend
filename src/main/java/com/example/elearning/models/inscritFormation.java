@@ -9,6 +9,15 @@ public class inscritFormation {
  private int  idApprenant;
  private int  idFormation;
  private String dateDajout;
+ private Double droitpaye;
+
+    public Double getDroitpaye() {
+        return droitpaye;
+    }
+
+    public void setDroitpaye(Double droitpaye) {
+        this.droitpaye = droitpaye;
+    }
  public int getIdinscritFormation() {
   return idinscritFormation;
  }
@@ -69,7 +78,7 @@ public class inscritFormation {
 
  }
 
- public void insererWithemail(String emaiApprenant,int idFormation) throws Exception {
+ public void insererWithemail(String emaiApprenant,int idFormation,double droitpaye) throws Exception {
 
 Apprenant A=FonctionBase.findByEmail(emaiApprenant);
   LocalDate date = LocalDate.now();
@@ -78,7 +87,7 @@ Apprenant A=FonctionBase.findByEmail(emaiApprenant);
   DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
   String formattedDate = date.format(formatter);
 if(A!=null){
- String sql="Insert into inscritFormation(idApprenant,idFormation,dateDajout) values ("+A.getIdApprenant()+","+idFormation+",'"+formattedDate+"')";
+ String sql="Insert into inscritFormation(idApprenant,idFormation,dateDajout,droitpaye) values ("+A.getIdApprenant()+","+idFormation+",'"+formattedDate+"','"+droitpaye+"')";
  FonctionBase.execute(sql);
 
 }

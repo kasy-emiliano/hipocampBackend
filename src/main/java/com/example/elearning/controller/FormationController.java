@@ -380,7 +380,6 @@ System.out.println("gratos");
 
     @GetMapping ("/MesFormationPlusNotee")
     public ResponseEntity<ArrayList<Formation>> MesFormationPlusNotee(@RequestParam("token") String token  ) throws Exception {
-System.out.println(token);
        Formateur f=FonctionBase.selectWithTokenF(token);
 
     ArrayList<Formation>rep=Formateur.MesFormationPlusNotee(f.getIdFormateur());
@@ -390,7 +389,6 @@ System.out.println(token);
     
     @GetMapping ("/tauxreussite")
     public ResponseEntity<ArrayList<Formation>> tauxreussite(@RequestParam("token") String token  ) throws Exception {
-System.out.println(token);
        Formateur f=FonctionBase.selectWithTokenF(token);
 
     ArrayList<Formation>rep=Formateur.tauxReussiteParFormation(f.getIdFormateur());
@@ -398,4 +396,26 @@ System.out.println(token);
         return  ResponseEntity.ok(rep);
     }
     
+    @GetMapping ("/sommeDroitPaye")
+    public ResponseEntity<ArrayList<Formation>> sommeDroitPaye(@RequestParam("token") String token  ) throws Exception {
+       Formateur f=FonctionBase.selectWithTokenF(token);
+
+    ArrayList<Formation>rep=Formateur.DroitPaye(f.getIdFormateur());
+
+        return  ResponseEntity.ok(rep);
+    }
+    
+        @GetMapping ("/sommetotaledroitpaye")
+public ResponseEntity<Double> Totalrevenue(@RequestParam("token") String token) throws Exception {
+    
+    Formateur f=FonctionBase.selectWithTokenF(token);
+
+    try {
+        double moyenne = Formateur.sommetotaledroitpaye(f.getIdFormateur());
+        return ResponseEntity.ok(moyenne);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+}
 }

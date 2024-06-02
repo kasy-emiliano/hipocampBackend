@@ -375,6 +375,7 @@ idinscritFormation serial primary key,
 idApprenant integer,
 idFormation integer,
 dateDajout date,
+droitPaye double precision,
 foreign key (idApprenant) references Apprenant(idApprenant),
 foreign key (idFormation) references Formation(idFormation)
 );
@@ -531,8 +532,7 @@ email varchar,
 contact varchar,
 dateDebut timestamp default now(),
 dateFin timestamp default now(),
-duree integer,
-montantParJours double precision,
+montantParJours double precision default 5000,
 titre varchar,
 resumer varchar,
 lien varchar
@@ -551,6 +551,81 @@ lien varchar
     VALUES 
     ('Google', 'uploads/mm.PNG', 'contact@google.com', '+1357924680', '2024-03-04 12:00:00', '2024-03-06 12:00:00', 7, 55.00,'sélo ou duo','une maniere de voir les choses entre deux ou tout seul','https://www.star.mg/historique');
 
+CREATE VIEW JourPublicite AS
+SELECT *,DATE_PART('day', datefin - datedebut) AS jour
+FROM publicite;
+
+CREATE VIEW jourxmontant AS
+ select idPublicite,nomorganisme,titre,datedebut,(jour*montantparjours ) as jourxmontant ,EXTRACT(MONTH FROM datedebut)AS mois,EXTRACT(YEAR FROM datedebut) AS annee  from JourPublicite;
+
+
+ create view annee as
+select annee from jourxmontant group by annee;  
+create view moisAnnee as
+select*from annee cross join mois;
+
+ create view tableaubord as
+ SELECT 
+    jp.idPublicite,
+    jp.nomorganisme,
+    jp.titre,
+    jp.datedebut,
+    coalesce(jp.jourxmontant,0) as jourxmontant,
+    jp.mois,
+    jp.annee,
+    ma.id as idmois,
+    ma.mois AS nom_mois
+FROM 
+moisAnnee as ma
+ left JOIN 
+    jourxmontant jp
+   
+ON 
+    ma.annee=jp.annee  AND 
+    ma.id=jp.mois;
+
+**************Par annee******
+SELECT
+    ma.mois AS nom_mois,
+    COALESCE(SUM(tb.jourxmontant), 0) AS totalrevenue
+FROM
+    moisAnnee ma
+LEFT JOIN
+    tableaubord tb
+ON
+    ma.annee = tb.annee AND
+    ma.id = tb.mois
+WHERE
+    ma.annee = 2023
+GROUP BY
+    ma.mois,
+    ma.id
+ORDER BY ma.id;
+
+****Somme total revenue******
+
+SELECT
+    SUM(totalrevenue) AS somme_totalrevenue
+FROM
+    (SELECT
+        ma.mois AS nom_mois,
+        COALESCE(SUM(tb.jourxmontant), 0) AS totalrevenue
+    FROM
+        moisAnnee ma
+    LEFT JOIN
+        tableaubord tb
+    ON
+        ma.annee = tb.annee AND
+        ma.id = tb.mois
+    WHERE
+        ma.annee = 2024
+    GROUP BY
+        ma.mois, ma.id
+    ORDER BY ma.id) AS revenus;
+
+ ************
+
+********************
 
 CREATE VIEW InfoFormateur AS
 SELECT
@@ -967,7 +1042,7 @@ SELECT * FROM formation
                  SELECT * FROM formation JOIN categorie ON formation.idcategorie = categorie.idcategorie JOIN typesacces ON formation.typesacces = typesacces.idTypesAcces JOIN langues ON formation.langues = langues.idLangues JOIN unite ON formation.unite = unite.idUnite WHERE idFormation =20;
 
 
-                 SELECT * FROM formation JOIN categorie ON formation.idcategorie = categorie.idcategorie JOIN typesacces ON formation.typesacces = typesacces.idTypesAcces JOIN langues ON formation.langues = langues.idLangues JOIN unite ON formation.unite = unite.idUnite JOIN inscritFormation ON formation.idFormation = inscritFormation.idFormation Join formateur on formation.idformateur=formateur.idformateurWHERE formation.etat = 2 AND etatpublication=2 and formateur.nomespace='Cedi'and  inscritFormation.idApprenant = 3 ORDER BY idinscritFormation DESC;
+                 SELECT * FROM formation JOIN categorie ON formation.idcategorie = categorie.idcategorie JOIN typesacces ON formation.typesacces = typesacces.idTypesAcces JOIN langues ON formation.langues = langues.idLangues JOIN unite ON formation.unite = unite.idUnite JOIN inscritFormation ON formation.idFormation = inscritFormation.idFormation Join formateur on formation.idformateur=formateur.idformateur WHERE formation.etat = 2 AND etatpublication=2 and formateur.nomespace='Cedi'and  inscritFormation.idApprenant = 3 ORDER BY idinscritFormation DESC;
 
 
                  SELECT idApprenant, nom_apprenant, prenom_apprenant, messages,tokenApprenant, vue,type,date FROM messagePrive WHERE (idApprenant, date) IN (SELECT idApprenant, MAX(date) AS max_date FROM messagePrive WHERE idformateur = 10 GROUP BY idApprenant);
@@ -1002,7 +1077,7 @@ SELECT SUM(note) AS noteApprenant,idApprenant,nom,prenom,idFormateur,NomFormateu
  
 select sum(note) as note from reponsesexamen join questionexamen on reponsesexamen.idquestion=questionexamen.idquestion where idExamen=61;
 
-***********Pourcentage admis************
+***********Pourcentage admis et non admis************
 
 WITH totalInscrits AS (
     SELECT COUNT(*) as total
@@ -1017,12 +1092,52 @@ totalAdmis AS (
         WHERE idformation = 27
         GROUP BY idApprenant
         HAVING SUM(note) >= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =61)
+    ) as admis;
+),
+totalNonAdmis AS (
+    SELECT COUNT(*) as total
+    FROM (
+        SELECT idApprenant
+        FROM resultatexamen
+        WHERE idformation = 27
+        GROUP BY idApprenant
+        HAVING SUM(note) <= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =61)
+    ) as Nonadmis
+)
+SELECT
+(SELECT COUNT(*) as totalInscrits FROM inscritformation WHERE idformation = 27),
+(SELECT COUNT(*) as Admis FROM (SELECT idApprenant FROM resultatexamen WHERE idformation = 27 GROUP BY idApprenant HAVING SUM(note) >= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =61))as admis),
+(SELECT COUNT(*) as NonAdmis FROM (SELECT idApprenant FROM resultatexamen WHERE idformation = 27 GROUP BY idApprenant HAVING SUM(note) <= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =61))as Nonadmis),
+(totalAdmis.total::float / totalInscrits.total::float) * 100 AS pourcentageAdmis,
+(totalNonAdmis.total::float / totalInscrits.total::float) * 100 AS pourcentageNonAdmis
+
+FROM totalInscrits, totalAdmis,totalNonAdmis;
+
+
+********Pourcentage non admis*********
+
+WITH totalInscrits AS (
+    SELECT COUNT(*) as total
+    FROM inscritformation
+    WHERE idformation = 27
+),
+
+totalNonAdmis AS (
+    SELECT COUNT(*) as total
+    FROM (
+        SELECT idApprenant
+        FROM resultatexamen
+        WHERE idformation = 27
+        GROUP BY idApprenant
+        HAVING SUM(note) <= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =61)
     ) as admis
 )
-SELECT (totalAdmis.total::float / totalInscrits.total::float) * 100 AS pourcentageAdmis
-FROM totalInscrits, totalAdmis;
+SELECT (totalNonAdmis.total::float / totalInscrits.total::float) * 100 AS pourcentageNonAdmis
+FROM totalInscrits, totalNonAdmis;
 
 *****************************
+
+
 
 SELECT formation.*, 
        COALESCE(moyennes.moyenne_note, 0) AS moyenne_note
@@ -1064,3 +1179,34 @@ LEFT JOIN totalAdmis ta ON f.idformation = ta.idformation
 where idformateur=10
 ORDER BY tauxReussite DESC;
 
+*************************
+
+SELECT
+    f.idformation,
+    f.titre,
+    COALESCE(SUM(ifo.droitpaye), 0) AS sommeDroitPaye
+FROM
+    formation f
+LEFT JOIN inscritFormation ifo ON f.idformation = ifo.idformation
+where idformateur=10
+GROUP BY f.idformation, f.titre
+ORDER BY f.idformation;
+
+**************************
+
+SELECT
+    SUM(sub.sommeDroitPaye) AS sommeTotaleDroitPaye
+FROM
+    (
+        SELECT
+            f.idformation,
+            f.titre,
+            COALESCE(SUM(ifo.droitpaye), 0) AS sommeDroitPaye
+        FROM
+            formation f
+        LEFT JOIN inscritFormation ifo ON f.idformation = ifo.idformation
+        WHERE f.idformateur = 10
+        GROUP BY f.idformation, f.titre
+    ) AS sub;
+
+    SELECT idformateur,idApprenant,nom_formateur ,prenom_formateur, messages,token,vue,type,date FROM messagePrive WHERE (idFormateur, date) IN (SELECT idformateur, MAX(date) AS max_date FROM messagePrive WHERE idapprenant =10 GROUP BY idformateur)ORDER BY date desc;

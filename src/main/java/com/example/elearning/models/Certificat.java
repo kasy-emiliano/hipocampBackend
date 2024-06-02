@@ -24,16 +24,53 @@ public class Certificat {
     String titreformation;
     Date dateexamen;
     private String phraseCertificat;
-    int pourcentageAdmis;
+    double pourcentageAdmis;
+    double pourcentageNonAdmis;
+    double totalinscrits;
+    double admis;
+    double nonadmis;
 
-    public int getPourcentageAdmis() {
+    public double getTotalinscrits() {
+        return totalinscrits;
+    }
+
+    public void setTotalinscrits(double totalinscrits) {
+        this.totalinscrits = totalinscrits;
+    }
+
+    public double getAdmis() {
+        return admis;
+    }
+
+    public void setAdmis(double admis) {
+        this.admis = admis;
+    }
+
+    public double getNonadmis() {
+        return nonadmis;
+    }
+
+    public void setNonadmis(double nonadmis) {
+        this.nonadmis = nonadmis;
+    }
+
+    public double getPourcentageAdmis() {
         return pourcentageAdmis;
     }
 
-    public void setPourcentageAdmis(int pourcentageAdmis) {
+    public void setPourcentageAdmis(double pourcentageAdmis) {
         this.pourcentageAdmis = pourcentageAdmis;
     }
 
+    public double getPourcentageNonAdmis() {
+        return pourcentageNonAdmis;
+    }
+
+    public void setPourcentageNonAdmis(double pourcentageNonAdmis) {
+        this.pourcentageNonAdmis = pourcentageNonAdmis;
+    }
+
+ 
 
     public String getPhraseCertificat() {
         return phraseCertificat;
@@ -336,8 +373,9 @@ public class Certificat {
 }
 
     
-        public double pourcentage(int idFormation,int idExamen) throws Exception {
-    double note = 0;
+    public ArrayList<Certificat> pourcentage(int idFormation, int idExamen) throws Exception {
+           ArrayList<Certificat> listeDept = new ArrayList<>();
+
     Connection connection = null;
     PreparedStatement statement = null;
     ResultSet result = null;
@@ -360,20 +398,49 @@ public class Certificat {
 "        GROUP BY idApprenant\n" +
 "        HAVING SUM(note) >= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =?)\n" +
 "    ) as admis\n" +
+"),\n" +
+"totalNonAdmis AS (\n" +
+"    SELECT COUNT(*) as total\n" +
+"    FROM (\n" +
+"        SELECT idApprenant\n" +
+"        FROM resultatexamen\n" +
+"        WHERE idformation = ?\n" +
+"        GROUP BY idApprenant\n" +
+"        HAVING SUM(note) <= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =?)\n" +
+"    ) as Nonadmis\n" +
 ")\n" +
-"SELECT (totalAdmis.total::float / totalInscrits.total::float) * 100 AS pourcentageAdmis\n" +
-"FROM totalInscrits, totalAdmis;";
+"SELECT\n" +
+"(SELECT COUNT(*) as totalInscrits FROM inscritformation WHERE idformation = ?),\n" +
+"(SELECT COUNT(*) as Admis FROM (SELECT idApprenant FROM resultatexamen WHERE idformation = ? GROUP BY idApprenant HAVING SUM(note) >= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =?))as admis),\n" +
+"(SELECT COUNT(*) as NonAdmis FROM (SELECT idApprenant FROM resultatexamen WHERE idformation = ? GROUP BY idApprenant HAVING SUM(note) <= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =?))as Nonadmis),\n" +
+"(totalAdmis.total::float / totalInscrits.total::float) * 100 AS pourcentageAdmis,\n" +
+"(totalNonAdmis.total::float / totalInscrits.total::float) * 100 AS pourcentageNonAdmis\n" +
+"\n" +
+"FROM totalInscrits, totalAdmis,totalNonAdmis;";
         
         statement = connection.prepareStatement(query);
         
         statement.setInt(1, idFormation);
         statement.setInt(2, idFormation);
         statement.setInt(3, idExamen);
+        statement.setInt(4, idFormation);
+        statement.setInt(5, idExamen);
+        statement.setInt(6, idFormation);
+        statement.setInt(7, idFormation);
+        statement.setInt(8, idExamen);
+        statement.setInt(9, idFormation);
+        statement.setInt(10, idExamen);
+
         result = statement.executeQuery();
 
         if (result.next()) {
-            
-            note = result.getInt("pourcentageadmis");
+           Certificat com = new Certificat();
+           com.setPourcentageAdmis(result.getDouble("pourcentageadmis"));
+           com.setPourcentageNonAdmis(result.getDouble("pourcentagenonadmis"));
+           com.setTotalinscrits(result.getDouble("totalinscrits"));
+           com.setAdmis(result.getDouble("admis"));
+           com.setNonadmis(result.getDouble("nonadmis"));
+listeDept.add(com);
         }
     } catch (Exception e) {
         throw e;
@@ -388,7 +455,8 @@ public class Certificat {
             connection.close();
         }
     }
-    return note;
+
+    return listeDept; 
 }
 
 }

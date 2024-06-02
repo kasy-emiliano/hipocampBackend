@@ -80,6 +80,16 @@ public class MessageController {
         ArrayList<MessagePrive> com = new MessagePrive().MessagePri(idFormateur);
         return ResponseEntity.ok(com);
     }
+    @GetMapping("/MessagePriApp")
+    public ResponseEntity<ArrayList<MessagePrive>> MessagePriApp(@RequestParam("token") String token) throws Exception {
+
+         Apprenant userDetails = FonctionBase.selectWithTokenConnecter(token);
+         int idApprenant = userDetails.getIdApprenant();
+
+
+        ArrayList<MessagePrive> com = new MessagePrive().MessagePriApp(idApprenant);
+        return ResponseEntity.ok(com);
+    }
 
     @GetMapping("/ListMessagePri")
     public ResponseEntity<ArrayList<MessagePrive>> ListeMessagePrive(@RequestParam("idApprenant") int idApprenant, @RequestParam("token") String token) throws Exception {

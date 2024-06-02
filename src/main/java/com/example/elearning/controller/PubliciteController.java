@@ -48,12 +48,9 @@ public class PubliciteController {
         String contact = request.getParameter("contact");
         Timestamp datedebut = Timestamp.valueOf(dateDebut);
         Timestamp datefin = Timestamp.valueOf(dateFin);
-        String dureeS = request.getParameter("duree");
         String titre = request.getParameter("titre");
         String resumer = request.getParameter("resumer");
         String lien = request.getParameter("lien");
-        int Duree = Integer.parseInt(dureeS);
-        double montantParJours = Double.parseDouble(request.getParameter("montantParJours"));
 
         String UPLOAD_DIR = "uploads/";
         String sary="";
@@ -84,7 +81,7 @@ public class PubliciteController {
  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("date fin doit etre apres la date debut");
 } else {
 
-        com.insertPublicite2(nomOrganisme, sary, lien, email, contact, datedebut, datefin, Duree, titre, montantParJours, resumer);
+        com.insertPublicite2(nomOrganisme, sary, lien, email, contact, datedebut, datefin, titre, resumer);
        
 }
 
@@ -98,4 +95,54 @@ public class PubliciteController {
         
         return  ResponseEntity.ok(com);
     }  
+    
+        @GetMapping ("/ListeMois")
+    public ResponseEntity<ArrayList<Mois>> Mois() throws Exception {
+ ArrayList<Mois> com = new Mois().ListeMois();
+        return  ResponseEntity.ok(com);
+    } 
+     @GetMapping ("/ListeAnnee")
+    public ResponseEntity<ArrayList<Annee>> Annee() throws Exception {
+ ArrayList<Annee> com = new Annee().ListeAnnee();
+        return  ResponseEntity.ok(com);
+    }
+    
+    @GetMapping ("/tableauBordPub")
+    public ResponseEntity<ArrayList<Publicite>> tableauBord(@RequestParam("idmois") int idmois,@RequestParam("annee") int annee  ) throws Exception {
+
+    ArrayList<Publicite>rep=new Publicite().TableauBordPub(idmois,annee);
+
+        return  ResponseEntity.ok(rep);
+    }
+    
+    @GetMapping ("/Totalrevenue")
+public ResponseEntity<Double> Totalrevenue(@RequestParam("idmois") int idmois,@RequestParam("annee") int annee) {
+    try {
+        Publicite pub = new Publicite();
+        double moyenne = pub.Totalrevenue(idmois,annee);
+        return ResponseEntity.ok(moyenne);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+}
+    @GetMapping ("/GraphParMois")
+    public ResponseEntity<ArrayList<Publicite>> GraphParMois(@RequestParam("annee") int annee  ) throws Exception {
+
+    ArrayList<Publicite>rep=new Publicite().GraphParMois(annee);
+
+        return  ResponseEntity.ok(rep);
+    }
+    
+     @GetMapping ("/Sommetotalrevenue")
+public ResponseEntity<Double> somme_totalrevenue(@RequestParam("annee") int annee) {
+    try {
+        Publicite pub = new Publicite();
+        double moyenne = pub.somme_totalrevenue(annee);
+        return ResponseEntity.ok(moyenne);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+}
 }

@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -876,5 +877,104 @@ public class Formateur {
         return listeDept;
     }
 
+   public static ArrayList<Formation> DroitPaye(int idFormateur) throws Exception {
+        ArrayList<Formation> listeDept = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+            FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+
+            // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
+            String sql ="SELECT\n" +
+"    f.idformation,\n" +
+"    f.titre,\n" +
+"    COALESCE(SUM(ifo.droitpaye), 0) AS sommeDroitPaye\n" +
+"FROM\n" +
+"    formation f\n" +
+"LEFT JOIN inscritFormation ifo ON f.idformation = ifo.idformation\n" +
+"where idformateur=?\n" +
+"GROUP BY f.idformation, f.titre\n" +
+"ORDER BY f.idformation;";
+            statement = connection.prepareStatement(sql);
+            // Paramètres de condition
+            statement.setInt(1, idFormateur);
+            result = statement.executeQuery();
+
+            while (result.next()) {
+                Formation com = new Formation();
+
+                com.setIdFormation(result.getInt("idFormation"));
+                com.setTitre(result.getString("titre"));
+                com.setSommeDroitPaye(result.getDouble("sommeDroitPaye"));
+            
+                listeDept.add(com);
+
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return listeDept;
+    }
+public static double sommetotaledroitpaye(int idFormateur) throws Exception {
+        double somme_totalrevenue = 0;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+          FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+            String query = "SELECT\n" +
+"    SUM(sub.sommeDroitPaye) AS sommeTotaleDroitPaye\n" +
+"FROM\n" +
+"    (\n" +
+"        SELECT\n" +
+"            f.idformation,\n" +
+"            f.titre,\n" +
+"            COALESCE(SUM(ifo.droitpaye), 0) AS sommeDroitPaye\n" +
+"        FROM\n" +
+"            formation f\n" +
+"        LEFT JOIN inscritFormation ifo ON f.idformation = ifo.idformation\n" +
+"        WHERE f.idformateur = ?\n" +
+"        GROUP BY f.idformation, f.titre\n" +
+"    ) AS sub;";
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, idFormateur);
+            result = statement.executeQuery();
+            if (result.next()) {
+                somme_totalrevenue = result.getDouble("sommetotaledroitpaye");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return somme_totalrevenue;
+    }   
         
 }

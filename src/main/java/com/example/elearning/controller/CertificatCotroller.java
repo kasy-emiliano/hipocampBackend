@@ -95,11 +95,11 @@ public class CertificatCotroller {
         return ResponseEntity.ok(count);
     }
         @GetMapping("/pourcentage")
-    public ResponseEntity<Double> pourcentage(@RequestParam("idFormation") int idFormation,@RequestParam("idExamen") int idExamen) throws Exception {
+    public ResponseEntity<ArrayList<Certificat>> pourcentage(@RequestParam("idFormation") int idFormation,@RequestParam("idExamen") int idExamen) throws Exception {
         
 
-        double pourcentage = new Certificat().pourcentage(idFormation,idExamen);
-        return ResponseEntity.ok(pourcentage);
+        ArrayList <Certificat> com = new Certificat().pourcentage(idFormation,idExamen);
+        return ResponseEntity.ok(com);
     }
 
     

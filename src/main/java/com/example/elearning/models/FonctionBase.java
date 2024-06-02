@@ -11,8 +11,8 @@ import java.util.Date;
 public class FonctionBase {
  
     public static Connection connect() throws Exception {
-        String url = "jdbc:postgresql://viaduct.proxy.rlwy.net:22481/railway?user=postgres&password=FvTnwpWTOuaEndgtUWXRexgzTQVASbru&charSet=UTF-8";
-        //String url = "jdbc:postgresql://localhost:5432/elearning?user=postgres&password=cedric10&charSet=UTF-8";
+        //String url = "jdbc:postgresql://viaduct.proxy.rlwy.net:22481/railway?user=postgres&password=FvTnwpWTOuaEndgtUWXRexgzTQVASbru&charSet=UTF-8";
+        String url = "jdbc:postgresql://localhost:5432/elearning?user=postgres&password=cedric10&charSet=UTF-8";
 
         Connection connection;
         connection = DriverManager.getConnection(url);
@@ -585,7 +585,7 @@ public static ArrayList<Formation> MesFormation(int idFormateur) throws Exceptio
             connection = connect.connect();
 
             // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
-            String sql ="SELECT formation.*,categorie.nom AS categorie_nom,typesacces.nom AS types_acces_nom,langues.nom AS langues_nom,unite.nom AS unite_nom FROM formation JOIN categorie ON formation.idcategorie = categorie.idcategorie JOIN typesacces ON formation.typesacces = typesacces.idTypesAcces JOIN langues ON formation.langues = langues.idLangues JOIN unite ON formation.unite = unite.idUnite WHERE idFormateur =? ORDER BY formation.idformation DESC;";
+            String sql ="SELECT formation.*,categorie.nom AS categorie_nom,typesacces.nom AS types_acces_nom,langues.nom AS langues_nom,unite.nom AS unite_nom FROM formation JOIN categorie ON formation.idcategorie = categorie.idcategorie JOIN typesacces ON formation.typesacces = typesacces.idTypesAcces JOIN langues ON formation.langues = langues.idLangues JOIN unite ON formation.unite = unite.idUnite WHERE idFormateur =? ORDER BY formation.idformation DESC";
             statement = connection.prepareStatement(sql);
             // Paramètres de condition
             statement.setInt(1, idFormateur);

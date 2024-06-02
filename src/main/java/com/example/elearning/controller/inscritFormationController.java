@@ -45,13 +45,14 @@ public class inscritFormationController {
         idApprenant=A.getIdApprenant();
         ins=FonctionBase.Suivie(idApprenant,Integer.parseInt(idFormation));
 
-
+        Formation form=new Formation();
+        double prix=form.prixFormation(Integer.parseInt(idFormation));
         if(ins!=null){
 
             System.out.println("hihi");
         }
         else {
-            inss.insererWithemail(email, Integer.parseInt(idFormation));
+            inss.insererWithemail(email, Integer.parseInt(idFormation),prix);
             S = FonctionBase.voalohany(Integer.parseInt(idFormation));
             m = new mouvementChapitres();
             m.inserer(A.getIdApprenant(), Integer.parseInt(idFormation), S);
@@ -97,14 +98,16 @@ public class inscritFormationController {
 
                  idApprenant=A.getIdApprenant();
                  ins=FonctionBase.Suivie(idApprenant,Integer.parseInt(idFormation));
-
+                 
+        Formation form=new Formation();
+        double prix=form.prixFormation(Integer.parseInt(idFormation));
 
                 if(ins!=null){
 
 System.out.println("hihi");
                 }
                 else {
-                    inss.insererWithemail(line, Integer.parseInt(idFormation));
+                    inss.insererWithemail(line, Integer.parseInt(idFormation),prix);
                     S = FonctionBase.voalohany(Integer.parseInt(idFormation));
                     m = new mouvementChapitres();
                     m.inserer(A.getIdApprenant(), Integer.parseInt(idFormation), S);
