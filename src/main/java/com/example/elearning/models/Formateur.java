@@ -40,7 +40,7 @@ public class Formateur {
     private String phraseCertificat;
     private String nomespace;
 
-        private String logo;
+    private String logo;
     private String couleurPrincipale;
     private String couleurArrierePlan ;
     private String CouleurTitre ;
@@ -891,7 +891,10 @@ public class Formateur {
             String sql ="SELECT\n" +
 "    f.idformation,\n" +
 "    f.titre,\n" +
-"    COALESCE(SUM(ifo.droitpaye), 0) AS sommeDroitPaye\n" +
+"    COALESCE(SUM(ifo.droitpaye), 0) AS sommeDroitPaye,\n" +
+"    f.depenseformation,\n" +
+"    (COALESCE(SUM(ifo.droitpaye), 0)-f.depenseformation) as benefice\n" +
+"\n" +
 "FROM\n" +
 "    formation f\n" +
 "LEFT JOIN inscritFormation ifo ON f.idformation = ifo.idformation\n" +
@@ -909,6 +912,8 @@ public class Formateur {
                 com.setIdFormation(result.getInt("idFormation"));
                 com.setTitre(result.getString("titre"));
                 com.setSommeDroitPaye(result.getDouble("sommeDroitPaye"));
+                com.setDepenseFormation(result.getDouble("depenseFormation"));
+                com.setBenefice(result.getDouble("benefice"));
             
                 listeDept.add(com);
 
@@ -928,6 +933,7 @@ public class Formateur {
         }
         return listeDept;
     }
+   
 public static double sommetotaledroitpaye(int idFormateur) throws Exception {
         double somme_totalrevenue = 0;
         Connection connection = null;
@@ -976,5 +982,92 @@ public static double sommetotaledroitpaye(int idFormateur) throws Exception {
         }
         return somme_totalrevenue;
     }   
-        
+
+    
+public static double sommetotaleDepense(int idFormateur) throws Exception {
+        double somme_totalrevenue = 0;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+          FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+            String query = "select sum(depenseformation) as sommedepenses from formation where idformateur=?";
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, idFormateur);
+            result = statement.executeQuery();
+            if (result.next()) {
+                somme_totalrevenue = result.getDouble("sommedepenses");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return somme_totalrevenue;
+    }   
+
+
+public static double sommetotaleBenefice(int idFormateur) throws Exception {
+        double somme_totalrevenue = 0;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+          FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+            String query = "SELECT SUM(benefice) AS sommeTotaleBenefice\n" +
+"FROM (\n" +
+"    SELECT\n" +
+"        f.idformation,\n" +
+"        f.titre,\n" +
+"        COALESCE(SUM(ifo.droitpaye), 0) AS sommeDroitPaye,\n" +
+"        f.depenseformation,\n" +
+"        (COALESCE(SUM(ifo.droitpaye), 0) - f.depenseformation) as benefice\n" +
+"    FROM\n" +
+"        formation f\n" +
+"    LEFT JOIN inscritFormation ifo ON f.idformation = ifo.idformation\n" +
+"    WHERE idformateur=?\n" +
+"    GROUP BY f.idformation, f.titre\n" +
+"    ORDER BY f.idformation\n" +
+") AS subquery;";
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, idFormateur);
+            result = statement.executeQuery();
+            if (result.next()) {
+                somme_totalrevenue = result.getDouble("sommetotalebenefice");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return somme_totalrevenue;
+    } 
 }

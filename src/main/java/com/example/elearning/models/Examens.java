@@ -8,12 +8,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class Examens {
 
@@ -167,7 +169,16 @@ public class Examens {
 
                 if (now.before(dateDebut)) {
                     // Si l'heure actuelle est avant la date de début de l'examen
-                    examen.setEtat("Examen le " + dateDebut.toString());
+                    Date dateDebutAsDate = new Date(dateDebut.getTime());
+
+    // Créer un SimpleDateFormat pour formatter la date
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy ' à ' HH'h'mm", Locale.FRENCH);
+
+    // Formater la date
+    String formattedDate = dateFormat.format(dateDebutAsDate);
+
+    // Définir l'état de l'examen
+    examen.setEtat("Examen le " + formattedDate);
                 } else if (now.after(dateFin)) {
                     // Si l'heure actuelle est après la date de fin de l'examen
                     examen.setEtat("Examen terminé");

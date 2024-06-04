@@ -271,6 +271,7 @@ CREATE TABLE public.Formation
   devalidation date,
   dedemande date,
   etatPublication integer,
+  droitformation double precision default 50000,
     foreign key (idFormateur) references Formateur(idFormateur),
     foreign key (unite) references unite(idUnite),
     foreign key (idCategorie) references Categorie(idCategorie),
@@ -1069,6 +1070,20 @@ FROM (
     AND vue = 0 and type=2
 ) AS sous_requete;
 
+
+SELECT COUNT(*) AS nombre_de_vues
+FROM (
+    SELECT idformateur, nom_formateur, prenom_formateur, messages, token, vue,type, date
+    FROM messagePrive
+    WHERE (idformateur, date) IN (
+        SELECT idformateur, MAX(date) AS max_date
+        FROM messagePrive
+        WHERE idapprenant = 10
+        GROUP BY idformateur
+    )
+    AND vue = 0 and type=1
+) AS sous_requete;
+
 SELECT idApprenant, nom_apprenant, prenom_apprenant, messages,tokenApprenant,type,vue,date FROM messagePrive WHERE (idApprenant, date) IN (SELECT idApprenant, MAX(date) AS max_date FROM messagePrive WHERE idformateur =10 GROUP BY idApprenant)ORDER BY date desc;
 
 
@@ -1184,7 +1199,13 @@ ORDER BY tauxReussite DESC;
 SELECT
     f.idformation,
     f.titre,
-    COALESCE(SUM(ifo.droitpaye), 0) AS sommeDroitPaye
+    COALESCE(SUM(ifo.droitpaye), 0) AS sommeDroitPaye,
+    f.depenseformation,
+    (COALESCE(SUM(ifo.droitpaye), 0)-f.depenseformation) as benefice,
+    from(
+        select sum(benefice) 
+    )
+
 FROM
     formation f
 LEFT JOIN inscritFormation ifo ON f.idformation = ifo.idformation
@@ -1208,5 +1229,8 @@ FROM
         WHERE f.idformateur = 10
         GROUP BY f.idformation, f.titre
     ) AS sub;
+
+
+    
 
     SELECT idformateur,idApprenant,nom_formateur ,prenom_formateur, messages,token,vue,type,date FROM messagePrive WHERE (idFormateur, date) IN (SELECT idformateur, MAX(date) AS max_date FROM messagePrive WHERE idapprenant =10 GROUP BY idformateur)ORDER BY date desc;

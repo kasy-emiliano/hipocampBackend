@@ -1,6 +1,14 @@
 package com.example.elearning.controller;
 
 import com.example.elearning.models.*;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -9,6 +17,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.Objects;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @CrossOrigin
 @Controller
@@ -125,6 +139,13 @@ ArrayList<Apprenant>rep=FonctionBase.ListApprenant();
 
 
 
+    @PostMapping("/AjoutLangue")
+    public ResponseEntity<String> AjoutPublicite(@RequestParam("nom") String nom) throws Exception {
+        Langues l=new Langues();
+        l.insertLangue(nom);
+         
+       return ResponseEntity.ok("ok");
+    }
 
 
 }

@@ -418,4 +418,31 @@ public ResponseEntity<Double> Totalrevenue(@RequestParam("token") String token) 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
 }
+        @GetMapping ("/sommedepenses")
+public ResponseEntity<Double> sommedepenses(@RequestParam("token") String token) throws Exception {
+    
+    Formateur f=FonctionBase.selectWithTokenF(token);
+
+    try {
+        double moyenne = Formateur.sommetotaleDepense(f.getIdFormateur());
+        return ResponseEntity.ok(moyenne);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+}
+
+       @GetMapping ("/sommetotalebenefice")
+public ResponseEntity<Double> sommetotalebenefice(@RequestParam("token") String token) throws Exception {
+    
+    Formateur f=FonctionBase.selectWithTokenF(token);
+
+    try {
+        double moyenne = Formateur.sommetotaleBenefice(f.getIdFormateur());
+        return ResponseEntity.ok(moyenne);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+}
 }

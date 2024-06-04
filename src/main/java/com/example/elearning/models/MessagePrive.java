@@ -365,6 +365,51 @@ public class MessagePrive {
     }
     return count;
 }
+    
+       public int countVueApp(int idApprenant) throws Exception {
+    int count = 0;
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet result = null;
+
+    try {
+        FonctionBase connect = new FonctionBase();
+        connection = connect.connect();
+
+        String query = "SELECT COUNT(*) AS nombre_de_vues\n" +
+"FROM (\n" +
+"    SELECT idformateur, nom_formateur, prenom_formateur, messages, token, vue,type, date\n" +
+"    FROM messagePrive\n" +
+"    WHERE (idformateur, date) IN (\n" +
+"        SELECT idformateur, MAX(date) AS max_date\n" +
+"        FROM messagePrive\n" +
+"        WHERE idapprenant = ?\n" +
+"        GROUP BY idformateur\n" +
+"    )\n" +
+"    AND vue = 0 and type=1\n" +
+") AS sous_requete;";
+        statement = connection.prepareStatement(query);
+        statement.setInt(1, idApprenant);
+        result = statement.executeQuery();
+
+        if (result.next()) {
+            count = result.getInt("nombre_de_vues");
+        }
+    } catch (Exception e) {
+        throw e;
+    } finally {
+        if (result != null) {
+            result.close();
+        }
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
+    }
+    return count;
+}
 
 }
 /* if(isFormateursend==true){

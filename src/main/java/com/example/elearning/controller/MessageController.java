@@ -109,6 +109,17 @@ public class MessageController {
         return ResponseEntity.ok(count);
     }
 
+    
+        @GetMapping("/countVueApp")
+    public ResponseEntity<Integer> countVueApp(@RequestParam("token") String token) throws Exception {
+       Apprenant userDetails = FonctionBase.selectWithTokenConnecter(token);
+         int idApprenant = userDetails.getIdApprenant();
+
+        int count = new MessagePrive().countVueApp(idApprenant);
+        return ResponseEntity.ok(count);
+    }
+
+    
     @PostMapping("/updateVue")
     public ResponseEntity<String> updateVue(@RequestParam("idApprenant") int idApprenant) throws Exception {
 
@@ -118,6 +129,17 @@ public class MessageController {
         return ResponseEntity.ok("Phrase modifié avec succès");
 
     }
+    
+        @PostMapping("/updateVueApp")
+    public ResponseEntity<String> updateVueApp(@RequestParam("idFormateur") int idFormateur) throws Exception {
+
+        Messages com = new Messages();
+        com.updateVueApp(idFormateur);
+
+        return ResponseEntity.ok("Phrase modifié avec succès");
+
+    }
+
 
 }
 

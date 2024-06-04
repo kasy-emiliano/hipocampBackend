@@ -46,6 +46,24 @@ public class Formation {
         private double moyenne_note;
         private double tauxreussite;
         private double sommeDroitPaye;
+        private double depenseFormation;
+        private double benefice;
+
+    public double getBenefice() {
+        return benefice;
+    }
+
+    public void setBenefice(double benefice) {
+        this.benefice = benefice;
+    }
+
+    public double getDepenseFormation() {
+        return depenseFormation;
+    }
+
+    public void setDepenseFormation(double depenseFormation) {
+        this.depenseFormation = depenseFormation;
+    }
 
     public double getSommeDroitPaye() {
         return sommeDroitPaye;

@@ -196,6 +196,36 @@ public class Messages {
         }
     }
 }
+       public void updateVueApp(int idFormateur) throws Exception {
+    Connection connection = null;
+    PreparedStatement statement = null;
+
+    try {
+        FonctionBase connect = new FonctionBase();
+        connection = connect.connect();
+        
+        // Requête paramétrée avec des ?
+        String query = "update messages set vue=1 where idFormateur=?";
+        
+        // Création du PreparedStatement
+        statement = connection.prepareStatement(query);
+        
+        // Assignation des valeurs aux paramètres
+        statement.setInt(1, idFormateur);
+        
+        // Exécution de la mise à jour
+        statement.executeUpdate();
+    } catch (Exception ex) {
+        throw ex;
+    } finally {
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
+    }
+}
 }
 /* if(isFormateursend==true){
             statement.setInt(1,idSender);
