@@ -844,8 +844,7 @@ public class Formateur {
 "FROM formation f\n" +
 "LEFT JOIN totalInscrits ti ON f.idformation = ti.idformation\n" +
 "LEFT JOIN totalAdmis ta ON f.idformation = ta.idformation\n" +
-"where idformateur=?\n" +
-"ORDER BY tauxReussite DESC;";
+"where idformateur=?";
             statement = connection.prepareStatement(sql);
             // Paramètres de condition
             statement.setInt(1, idFormateur);

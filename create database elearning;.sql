@@ -132,12 +132,6 @@ insert into Categorie(nom)values('Télémédecine');
 
 
 
-
-
-
-
-
-
 CREATE TABLE IF NOT EXISTS public.Apprenant
 (
     idApprenant serial primary key,
@@ -158,7 +152,28 @@ CREATE TABLE IF NOT EXISTS public.Apprenant
     foreign key (modeDexercice) references modeDexercice(idmodeDexercice)
 );
 
-insert into Apprenant(idApprenant,nom,Prenom,email,mdp,Profession,civilite,modeDexercice,numero,token,etatCompte)values(1,'Cedric','Bolt','cedric@gmail.com','cedric',8,1,1,'0323212321','abc',1);
+insert into Apprenant(nom,Prenom,email,mdp,Profession,civilite,modeDexercice,numero,token,etatCompte,dateDajout)values('Cedric','Kasy','cedrickasy10@gmail.com','cedi',2,4,1,'0323212321','abc',1,'2024-04-06');
+
+INSERT INTO Apprenant(nom, Prenom, email, mdp, Profession, civilite, modeDexercice, numero, token, etatCompte, dateDajout) VALUES
+('Alice', 'Dupont', 'alice.dupont@example.com', 'alice123', 3, 2, 1, '0323212322', 'def', 1, '2024-04-07'),
+('Bob', 'Martin', 'bob.martin@example.com', 'bob321', 1, 1, 2, '0323212323', 'ghi', 1, '2024-04-08'),
+('Claire', 'Durand', 'claire.durand@example.com', 'claire2024', 4, 2, 3, '0323212324', 'jkl', 1, '2024-04-09'),
+('David', 'Smith', 'david.smith@example.com', 'davids', 2, 4, 1, '0323212325', 'mno', 1, '2024-04-10'),
+('Emma', 'Johnson', 'emma.johnson@example.com', 'emma456', 3, 1, 2, '0323212326', 'pqr', 1, '2024-04-11'),
+('Frank', 'Brown', 'frank.brown@example.com', 'frank789', 1, 2, 3, '0323212327', 'stu', 1, '2024-04-12'),
+('Grace', 'Lee', 'grace.lee@example.com', 'grace101', 4, 1, 1, '0323212328', 'vwx', 1, '2024-04-13'),
+('Henry', 'Wilson', 'henry.wilson@example.com', 'henry123', 2, 3, 2, '0323212329', 'yz', 1, '2024-04-14'),
+('Ivy', 'Moore', 'ivy.moore@example.com', 'ivy2024', 3, 2, 1, '0323212330', 'abc123', 1, '2024-04-15'),
+('Jack', 'Taylor', 'jack.taylor@example.com', 'jack321', 1, 4, 3, '0323212331', 'def456', 1, '2024-04-16'),
+('Kelly', 'Anderson', 'kelly.anderson@example.com', 'kelly654', 4, 1, 2, '0323212332', 'ghi789', 1, '2024-04-17'),
+('Luke', 'Thomas', 'luke.thomas@example.com', 'luke987', 2, 3, 1, '0323212333', 'jkl101', 1, '2024-04-18'),
+('Mia', 'Jackson', 'mia.jackson@example.com', 'mia112', 3, 2, 2, '0323212334', 'mno112', 1, '2024-04-19'),
+('Nick', 'White', 'nick.white@example.com', 'nick123', 1, 4, 3, '0323212335', 'pqr123', 1, '2024-04-20'),
+('Olivia', 'Harris', 'olivia.harris@example.com', 'olivia456', 4, 2, 1, '0323212336', 'stu456', 1, '2024-04-21'),
+('Paul', 'Martin', 'paul.martin@example.com', 'paul789', 2, 1, 2, '0323212337', 'vwx789', 1, '2024-04-22'),
+('Quinn', 'Garcia', 'quinn.garcia@example.com', 'quinn101', 3, 4, 3, '0323212338', 'yz101', 1, '2024-04-23'),
+('Rose', 'Martinez', 'rose.martinez@example.com', 'rose2024', 1, 2, 1, '0323212339', 'abc456', 1, '2024-04-24'),
+('Sam', 'Robinson', 'sam.robinson@example.com', 'sam321', 4, 1, 2, '0323212340', 'def789', 1, '2024-04-25');
 
 
 
@@ -271,7 +286,7 @@ CREATE TABLE public.Formation
   devalidation date,
   dedemande date,
   etatPublication integer,
-  droitformation double precision default 50000,
+  depenseformation double precision default 200000,
     foreign key (idFormateur) references Formateur(idFormateur),
     foreign key (unite) references unite(idUnite),
     foreign key (idCategorie) references Categorie(idCategorie),
@@ -380,6 +395,7 @@ droitPaye double precision,
 foreign key (idApprenant) references Apprenant(idApprenant),
 foreign key (idFormation) references Formation(idFormation)
 );
+
 
 CREATE TABLE public.mouvementChapitres
 (
@@ -539,12 +555,18 @@ resumer varchar,
 lien varchar
 );
 
-    INSERT INTO publicite (NomOrganisme, sary, email, contact, dateDebut, dateFin, duree, montantParJours,titre,resumer,lien)
-    VALUES 
-    ('Google', 'mm.PNG', 'contact@google.com', '+1357924680', '2024-03-04 12:00:00', '2024-03-06 12:00:00', 7, 55.00,'sélo ou duo','une maniere de voir les choses entre deux ou tout seul','https://www.star.mg/historique');
+INSERT INTO publicite (NomOrganisme, sary, email, contact, dateDebut, dateFin, titre, resumer, lien)
+VALUES 
+('Réveillon du Nouvel An', 'reveillonnouvelan.jpg', 'contact@reveillonnouvelan.com', '+1234567809', '2023-12-31 20:00:00', '2024-01-01 20:00:00', 'Nouvelle Année, Nouveaux Départs', 'Célébrez le passage à la nouvelle année avec une soirée mémorable comprenant dîner, danse et feu artifice.', 'https://www.reveillonnouvelan.com');
+('Marché de Noel', 'marchenoel.jpg', 'info@marchenoel.com', '+3216549870', '2023-12-01 10:00:00', '2023-12-04 21:00:00', 'Féérie de Noel', 'Venez découvrir des produits artisanaux, des décorations festives et des spécialités culinaires au marché de Noel.', 'https://www.marchenoel.com'),
 
-        ('Samsung', 'image2.jpg', 'contact@samsung.com', '+1987654321', '2024-02-15 12:00:00', '2024-02-17 12:00:00', 7, 45.00,'music ou rien','music fort,une sentiment de comment aimer la music','https://www.star.mg/historique');
-    ('Apple', 'image1.jpg', 'contact@apple.com', '+1234567890', '2024-02-14 12:00:00', '2024-02-17 12:00:00', 7, 50.00,'la viéé des etudiants','les etudiants sont comme les gens normal blablabla ','https://invivox.com/fr'),
+('Festival des Lumières', 'festival_lumieres.jpg', 'contact@festivallumieres.com', '+1987654321', '2023-12-08 18:00:00', '2023-12-11 23:00:00', 'eclats de Lumière', 'Admirez des installations lumineuses spectaculaires et profitez animations et de spectacles en soirée.', 'https://www.festivallumieres.com'),
+
+('Concert de Noel', 'concert_noel.jpg', 'info@concertnoel.com', '+1237896540', '2023-12-15 19:00:00', '2023-12-16 21:30:00', 'Mélodies Festives', 'Venez assister à un concert de Noël avec des performances de chorales et orchestres interprétant des classiques de Noel.', 'https://www.concertnoel.com'),
+
+('Réveillon du Nouvel An', 'reveillonnouvelan.jpg', 'contact@reveillonnouvelan.com', '+1234567809', '2023-12-31 20:00:00', '2024-01-01 20:00:00', 'Nouvelle Année, Nouveaux Départs', 'Célébrez le passage à la nouvelle année avec une soirée mémorable comprenant dîner, danse et feu artifice.', 'https://www.reveillonnouvelan.com');
+
+
 
 
 
@@ -821,51 +843,11 @@ insert into Questions_Examen(idExamen,idQuestion) values(1,2);
  
 
   
- CREATE or replace VIEW ResultatExamen AS 
-SELECT ra.idApprenant,
-        ra.idReponse,
-        ra.idExamen as idExamen,
-        re.Reponse AS ReponseApprenant,
-       re.note
-FROM ReponsesApprenant ra
-INNER JOIN ReponsesExamen re ON ra.idReponse = re.idReponse;
-WHERE idExamen =12;
+ 
 
+ 
 
-
-SELECT a.idApprenant,
-       a.Nom,
-       a.Prenom,
-       a.email,
-       ra.idReponse,
-       ra.idExamen as idExamen,
-       re.Reponse AS ReponseApprenant,
-       re.note
-FROM ReponsesApprenant ra
-INNER JOIN ReponsesExamen re ON ra.idReponse = re.idReponse
-INNER JOIN public.Apprenant a ON ra.idApprenant = a.idApprenant;
-WHERE idExamen =12;
-
- CREATE or replace VIEW ResultatExamen AS 
-SELECT a.idApprenant,
-       a.Nom,
-       a.Prenom,
-       a.email,
-       ra.idReponse,
-       ra.idExamen AS idExamen,
-       re.Reponse AS ReponseApprenant,
-       re.note,
-       f.idFormation,
-       f.Titre AS TitreFormation,
-       e.TitreExamen,
-       e.DateExamen
-FROM ReponsesApprenant ra
-INNER JOIN ReponsesExamen re ON ra.idReponse = re.idReponse
-INNER JOIN public.Apprenant a ON ra.idApprenant = a.idApprenant
-INNER JOIN Examens e ON ra.idExamen = e.idExamen
-INNER JOIN Formation f ON e.idFormation = f.idFormation; 
-where ra.idExamen=12;
-
+ 
 
 SELECT f.idFormation,
        f.Titre AS TitreFormation,
@@ -1097,17 +1079,17 @@ select sum(note) as note from reponsesexamen join questionexamen on reponsesexam
 WITH totalInscrits AS (
     SELECT COUNT(*) as total
     FROM inscritformation
-    WHERE idformation = 27
+    WHERE idformation = 39
 ),
 totalAdmis AS (
     SELECT COUNT(*) as total
     FROM (
         SELECT idApprenant
         FROM resultatexamen
-        WHERE idformation = 27
+        WHERE idformation = 39
         GROUP BY idApprenant
-        HAVING SUM(note) >= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =61)
-    ) as admis;
+        HAVING SUM(note) >= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =68)
+    ) as admis
 ),
 totalNonAdmis AS (
     SELECT COUNT(*) as total
@@ -1116,13 +1098,13 @@ totalNonAdmis AS (
         FROM resultatexamen
         WHERE idformation = 27
         GROUP BY idApprenant
-        HAVING SUM(note) <= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =61)
+        HAVING SUM(note) <= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =68)
     ) as Nonadmis
 )
 SELECT
-(SELECT COUNT(*) as totalInscrits FROM inscritformation WHERE idformation = 27),
-(SELECT COUNT(*) as Admis FROM (SELECT idApprenant FROM resultatexamen WHERE idformation = 27 GROUP BY idApprenant HAVING SUM(note) >= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =61))as admis),
-(SELECT COUNT(*) as NonAdmis FROM (SELECT idApprenant FROM resultatexamen WHERE idformation = 27 GROUP BY idApprenant HAVING SUM(note) <= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =61))as Nonadmis),
+(SELECT COUNT(*) as totalInscrits FROM inscritformation WHERE idformation = 39),
+(SELECT COUNT(*) as Admis FROM (SELECT idApprenant FROM resultatexamen WHERE idformation = 39 GROUP BY idApprenant HAVING SUM(note) >= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =68))as admis),
+(SELECT COUNT(*) as NonAdmis FROM (SELECT idApprenant FROM resultatexamen WHERE idformation = 39 GROUP BY idApprenant HAVING SUM(note) <= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =68))as Nonadmis),
 (totalAdmis.total::float / totalInscrits.total::float) * 100 AS pourcentageAdmis,
 (totalNonAdmis.total::float / totalInscrits.total::float) * 100 AS pourcentageNonAdmis
 
@@ -1181,7 +1163,7 @@ totalAdmis AS (
     HAVING SUM(re.note) >= (
         SELECT SUM(note) / 2
         FROM resultatexamen
-        WHERE idformation = re.idformation
+        WHERE idformation = 44
     )
 )
 SELECT 
@@ -1234,3 +1216,109 @@ FROM
     
 
     SELECT idformateur,idApprenant,nom_formateur ,prenom_formateur, messages,token,vue,type,date FROM messagePrive WHERE (idFormateur, date) IN (SELECT idformateur, MAX(date) AS max_date FROM messagePrive WHERE idapprenant =10 GROUP BY idformateur)ORDER BY date desc;
+
+
+
+    *************************
+
+elearning=# select*from examens;
+ idexamen | idformation |           titreexamen           | dateexamen | timer |   datedebutexamen   |    datefinexamen
+----------+-------------+---------------------------------+------------+-------+---------------------+---------------------
+       68 |          39 | QCM sur la Formation Leadership | 2024-06-05 |       | 2024-06-07 08:15:00 | 2024-06-07 08:45:00
+(1 row)
+
+elearning=# select*from reponsesexamen;
+
+idreponse | note
+-----------+------
+       232 |    0
+       231 |    0
+       230 |    3
+       229 |    0
+       228 |    0
+       227 |    0
+       226 |    2
+       225 |    0
+       224 |    0
+       223 |    0
+       222 |    3
+       221 |    0
+       220 |    0
+       219 |    0
+       218 |    3
+       217 |    0
+ 
+elearning=# select*from reponsesapprenant;
+ idreponseapprenant | idexamen | idapprenant | idreponse
+--------------------+----------+-------------+-----------
+(0 rows)
+************Marina jiaby**************
+insert into reponsesapprenant(idexamen,idapprenant,idreponse) values(70,12,191),(70,12,196),(70,12,198),(70,12,203);
+****************************************
+insert into reponsesapprenant(idexamen,idapprenant,idreponse) values(68,23,149),(68,23,153),(68,23,155),(68,23,170),(68,23,162),(68,23,165),(68,23,166),(68,23,170);
+
+
+ SELECT SUM(note) AS noteApprenant,idApprenant,nom,prenom,idFormateur,NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,datedebutexamen,phraseCertificat FROM ResultatExamen WHERE idExamen =69   GROUP BY idApprenant,nom,prenom,idformateur, NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,datedebutexamen,phraseCertificat HAVING SUM(note) <= (SELECT SUM(note) / 2 AS noteExam FROM totalNoteExam WHERE idExamen =69);
+
+
+ WITH 
+totalInscrits AS (
+    SELECT COUNT(*) as total
+    FROM inscritformation
+    WHERE idformation = 44
+),
+totalAdmis AS (
+    SELECT COUNT(*) as total
+    FROM (
+        SELECT idApprenant
+        FROM resultatexamen
+        WHERE idformation = 44
+        GROUP BY idApprenant
+        HAVING SUM(note) >= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen = 69)
+    ) as admis
+),
+totalNonAdmis AS (
+    SELECT (ti.total - ta.total) as total
+    FROM totalInscrits ti, totalAdmis ta
+)
+SELECT
+    ti.total as totalInscrits,
+    ta.total as Admis,
+    tn.total as NonAdmis,
+    (ta.total::float / ti.total::float) * 100 AS pourcentageAdmis,
+    (tn.total::float / ti.total::float) * 100 AS pourcentageNonAdmis
+FROM
+    totalInscrits ti, totalAdmis ta, totalNonAdmis tn;
+
+
+WITH totalInscrits AS (
+    SELECT idformation, COUNT(*) AS totalInscrits
+    FROM inscritformation
+    GROUP BY idformation
+),
+totalAdmis AS (
+    SELECT re.idformation, COUNT(DISTINCT re.idApprenant) AS totalAdmis
+    FROM resultatexamen re
+    JOIN Examens ex ON re.idExamen = ex.idExamen
+    GROUP BY re.idformation
+    HAVING SUM(re.note) >= (
+        SELECT SUM(note) / 2
+        FROM resultatexamen
+        WHERE idformation = re.idformation
+
+    
+    )
+)
+SELECT 
+    f.idformation, 
+    f.titre,
+    COALESCE((ta.totalAdmis::float / ti.totalInscrits::float) * 100, 0) AS tauxReussite
+FROM formation f
+LEFT JOIN totalInscrits ti ON f.idformation = ti.idformation
+LEFT JOIN totalAdmis ta ON f.idformation = ta.idformation
+where idformateur=10
+ORDER BY tauxReussite DESC;
+
+
+SELECT SUM(note) AS noteApprenant,idApprenant,nom,prenom,idFormateur,
+    NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,datedebutexamen,phraseCertificat FROM ResultatExamen WHERE idformation = 44 GROUP BY idApprenant, nom, prenom, idformateur, NomFormateur, PrenomFormateur, nomorgannisme, idExamen, idFormation, TitreFormation, datedebutexamen, phraseCertificat HAVING SUM(note) >= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen = 69) ORDER BY noteApprenant DESC;

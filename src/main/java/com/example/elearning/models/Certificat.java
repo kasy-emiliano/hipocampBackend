@@ -22,7 +22,7 @@ public class Certificat {
     int idformation;
     int idformateur;
     String titreformation;
-    Date dateexamen;
+    Date datedebutexamen;
     private String phraseCertificat;
     double pourcentageAdmis;
     double pourcentageNonAdmis;
@@ -169,15 +169,15 @@ public class Certificat {
         this.titreformation = titreformation;
     }
 
-    public Date getDateexamen() {
-        return dateexamen;
+    public Date getDatedebutexamen() {
+        return datedebutexamen;
     }
 
-    public void setDateexamen(Date dateexamen) {
-        this.dateexamen = dateexamen;
+    public void setDatedebutexamen(Date datedebutexamen) {
+        this.datedebutexamen = datedebutexamen;
     }
 
-    public Certificat(double noteapprenant, int idapprenant, String nom, String prenom, String nomformateur, String prenomformateur, String nomorgannisme, int idexamen, int idformation, String titreformation, Date dateexamen) {
+    public Certificat(double noteapprenant, int idapprenant, String nom, String prenom, String nomformateur, String prenomformateur, String nomorgannisme, int idexamen, int idformation, String titreformation, Date datedebutexamen) {
         this.noteapprenant = noteapprenant;
         this.idapprenant = idapprenant;
         this.nom = nom;
@@ -188,7 +188,7 @@ public class Certificat {
         this.idexamen = idexamen;
         this.idformation = idformation;
         this.titreformation = titreformation;
-        this.dateexamen = dateexamen;
+        this.datedebutexamen = datedebutexamen;
     }
 
     public Certificat() {
@@ -205,7 +205,7 @@ public class Certificat {
             connection = connect.connect();
 
             // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
-            String query = " SELECT SUM(note) AS noteApprenant,idApprenant,nom,prenom,idFormateur,NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,DateExamen,phraseCertificat FROM ResultatExamen WHERE idExamen =? AND idApprenant =? GROUP BY idApprenant,nom,prenom,idformateur, NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,DateExamen,phraseCertificat HAVING SUM(note) >= (SELECT SUM(note) / 2 AS noteExam FROM totalNoteExam WHERE idExamen =?) ";
+            String query = " SELECT SUM(note) AS noteApprenant,idApprenant,nom,prenom,idFormateur,NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,datedebutexamen,phraseCertificat FROM ResultatExamen WHERE idExamen =? AND idApprenant =? GROUP BY idApprenant,nom,prenom,idformateur, NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,datedebutexamen,phraseCertificat HAVING SUM(note) >= (SELECT SUM(note) / 2 AS noteExam FROM totalNoteExam WHERE idExamen =?) ";
             statement = connection.prepareStatement(query);
             // Paramètres de condition
             statement.setInt(1, idExamen);
@@ -226,7 +226,7 @@ public class Certificat {
                 com.setNomorgannisme(result.getString("nomorgannisme"));
                 com.setNomformateur(result.getString("nomformateur"));
                 com.setNoteapprenant(result.getDouble("noteapprenant"));
-                com.setDateexamen(result.getDate("dateexamen"));
+                com.setDatedebutexamen(result.getDate("datedebutexamen"));
                 com.setPhraseCertificat(result.getString("phrasecertificat")); 
 
                 
@@ -259,7 +259,8 @@ public class Certificat {
             connection = connect.connect();
 
             // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
-            String query = " SELECT SUM(note) AS noteApprenant,idApprenant,nom,prenom,idFormateur,NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,DateExamen,phraseCertificat FROM ResultatExamen WHERE idformation =? GROUP BY idApprenant,nom,prenom,idformateur, NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,DateExamen,phraseCertificat HAVING SUM(note) >= (SELECT SUM(note) / 2 AS noteExam FROM totalNoteExam WHERE idExamen =?) ";
+            String query = " SELECT SUM(note) AS noteApprenant,idApprenant,nom,prenom,idFormateur,\n" +
+"    NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,datedebutexamen,phraseCertificat FROM ResultatExamen WHERE idformation = ? GROUP BY idApprenant, nom, prenom, idformateur, NomFormateur, PrenomFormateur, nomorgannisme, idExamen, idFormation, TitreFormation, datedebutexamen, phraseCertificat HAVING SUM(note) >= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen = ?) ORDER BY noteApprenant DESC";
             statement = connection.prepareStatement(query);
             // Paramètres de condition
             statement.setInt(1, idFormation);
@@ -279,7 +280,7 @@ public class Certificat {
                 com.setNomorgannisme(result.getString("nomorgannisme"));
                 com.setNomformateur(result.getString("nomformateur"));
                 com.setNoteapprenant(result.getDouble("noteapprenant"));
-                com.setDateexamen(result.getDate("dateexamen"));
+                com.setDatedebutexamen(result.getDate("datedebutexamen"));
 
                 listeDept.add(com);
             }
@@ -396,40 +397,27 @@ public class Certificat {
 "        FROM resultatexamen\n" +
 "        WHERE idformation = ?\n" +
 "        GROUP BY idApprenant\n" +
-"        HAVING SUM(note) >= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =?)\n" +
+"        HAVING SUM(note) >= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen = ?)\n" +
 "    ) as admis\n" +
 "),\n" +
 "totalNonAdmis AS (\n" +
-"    SELECT COUNT(*) as total\n" +
-"    FROM (\n" +
-"        SELECT idApprenant\n" +
-"        FROM resultatexamen\n" +
-"        WHERE idformation = ?\n" +
-"        GROUP BY idApprenant\n" +
-"        HAVING SUM(note) <= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =?)\n" +
-"    ) as Nonadmis\n" +
+"    SELECT (ti.total - ta.total) as total\n" +
+"    FROM totalInscrits ti, totalAdmis ta\n" +
 ")\n" +
 "SELECT\n" +
-"(SELECT COUNT(*) as totalInscrits FROM inscritformation WHERE idformation = ?),\n" +
-"(SELECT COUNT(*) as Admis FROM (SELECT idApprenant FROM resultatexamen WHERE idformation = ? GROUP BY idApprenant HAVING SUM(note) >= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =?))as admis),\n" +
-"(SELECT COUNT(*) as NonAdmis FROM (SELECT idApprenant FROM resultatexamen WHERE idformation = ? GROUP BY idApprenant HAVING SUM(note) <= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen =?))as Nonadmis),\n" +
-"(totalAdmis.total::float / totalInscrits.total::float) * 100 AS pourcentageAdmis,\n" +
-"(totalNonAdmis.total::float / totalInscrits.total::float) * 100 AS pourcentageNonAdmis\n" +
-"\n" +
-"FROM totalInscrits, totalAdmis,totalNonAdmis;";
+"    ti.total as totalInscrits,\n" +
+"    ta.total as Admis,\n" +
+"    tn.total as NonAdmis,\n" +
+"    (ta.total::float / ti.total::float) * 100 AS pourcentageAdmis,\n" +
+"    (tn.total::float / ti.total::float) * 100 AS pourcentageNonAdmis\n" +
+"FROM\n" +
+"    totalInscrits ti, totalAdmis ta, totalNonAdmis tn;";
         
         statement = connection.prepareStatement(query);
         
         statement.setInt(1, idFormation);
         statement.setInt(2, idFormation);
         statement.setInt(3, idExamen);
-        statement.setInt(4, idFormation);
-        statement.setInt(5, idExamen);
-        statement.setInt(6, idFormation);
-        statement.setInt(7, idFormation);
-        statement.setInt(8, idExamen);
-        statement.setInt(9, idFormation);
-        statement.setInt(10, idExamen);
 
         result = statement.executeQuery();
 
