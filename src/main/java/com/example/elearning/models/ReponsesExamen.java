@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ReponsesExamen {
 
@@ -14,6 +15,15 @@ public class ReponsesExamen {
    private int idQuestion;
    private String Reponse;
    private double note;
+   private double typeReponses;
+
+    public double getTypeReponses() {
+        return typeReponses;
+    }
+
+    public void setTypeReponses(double typeReponses) {
+        this.typeReponses = typeReponses;
+    }
 
     public int getIdReponse() {
         return idReponse;
@@ -62,19 +72,20 @@ public class ReponsesExamen {
 
      
     
-     public void insertReponsesExamen(int idQuestion, String Reponse, double note) throws Exception {
+     public void insertReponsesExamen(int idQuestion, String Reponse, double note,double typeReponses) throws Exception {
     Connection connection = null;
     PreparedStatement statement = null;
     try {
          FonctionBase connect= new FonctionBase();
         connection = connect.connect();
-        String query = "insert into ReponsesExamen(idQuestion,Reponse,note) values (?,?,?)";
+        String query = "insert into ReponsesExamen(idQuestion,Reponse,note,typeReponses) values (?,?,?,?)";
         
         connection.createStatement().execute("SET NAMES 'UTF8'"); // Pour PostgreSQL
         statement = connection.prepareStatement(query);
         statement.setInt(1, idQuestion);
         statement.setString(2, Reponse);
         statement.setDouble(3, note);
+        statement.setDouble(4, typeReponses);
         statement.executeUpdate();
     } catch (Exception e) {
         throw e;
@@ -203,7 +214,44 @@ public class ReponsesExamen {
     return count;
 }
 
+public static List<String> reponseLibre(int idExamen) throws Exception {
+        List <String> reponses= new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
 
+        try {
+            FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+
+            // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
+            String sql ="select reponsLibre from ReponsesApprenant where idexamen=?";
+            statement = connection.prepareStatement(sql);
+            // Paramètres de condition
+            statement.setInt(1, idExamen);
+            result = statement.executeQuery();
+
+            while (result.next()) {
+            String reponse = result.getString("reponsLibre");
+            if (reponse != null && !reponse.trim().isEmpty()) { // Vérifier si la réponse n'est ni null ni vide
+                reponses.add(reponse);
+            }
+        }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return reponses;
+    }
 
      
  }

@@ -11,6 +11,7 @@ import com.example.elearning.models.Formation;
 import com.example.elearning.models.FormationCommentaire;
 import com.example.elearning.models.InsererQuestion;
 import com.example.elearning.models.MessagePrive;
+import com.example.elearning.models.Messages;
 import com.example.elearning.models.NoteFormation;
 import com.example.elearning.models.QuestionExamPff;
 import com.example.elearning.models.QuestionExamen;
@@ -130,7 +131,7 @@ System.out.println("ouigiuafisfdui");
 
     @PostMapping(value = "/newQuestionExamen", consumes = MediaType.APPLICATION_JSON_VALUE)
 
-    public ResponseEntity<String> newQuestionExamen(@RequestBody QuestionExamPff ii) throws Exception {
+    public ResponseEntity<String> newQuestionExamen(@RequestBody QuestionExamPff ii,@RequestParam("typeReponses")double typeReponses) throws Exception {
 
         System.out.println("iio" + ii.getIdExamen());
         System.out.println(ii.getReponses());
@@ -152,9 +153,10 @@ System.out.println("ouigiuafisfdui");
             // ...
             for (int i = 0; i < reponses.size(); i++) {
 
-                System.out.println(reponses.get(i).getText());
+                System.out.println(reponses.get(i).getText());          
 
-                R.insertReponsesExamen(d, reponses.get(i).getText(), Double.valueOf(reponses.get(i).getNote()));
+
+                R.insertReponsesExamen(d, reponses.get(i).getText(), Double.valueOf(reponses.get(i).getNote()),typeReponses);
 
             }
             return ResponseEntity.ok("Réponse réussie !");
@@ -201,7 +203,21 @@ ReponsesApprenant Qu=new ReponsesApprenant();
 
     return ResponseEntity.ok("Réponses envoyées avec succès.");
 }
+      /*@PostMapping("/PasserExamenReponseLibre")
+public ResponseEntity<String> PasserExamenReponseLibre(@RequestParam("token") String token,@RequestParam("idExamen") int idExamen,@RequestParam("idQuestion") int idQuestion,@RequestParam("reponselibre") String reponselibre ) throws Exception {
     
+    ReponsesApprenant Qu=new ReponsesApprenant();
+ 
+    Apprenant apprenant = FonctionBase.selectWithTokenConnecter(token);
+    if(apprenant == null) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+    }
+
+        Qu.insertReponseLibre(idExamen, apprenant.getIdApprenant(),idQuestion,reponselibre);
+    
+
+    return ResponseEntity.ok("Réponses envoyées avec succès.");
+} */
     
        @GetMapping ("/LesExamens")
     public ResponseEntity<ArrayList<Examens>> LesExamens(@RequestParam("idFormation") int idFormation  ) throws Exception {
@@ -307,4 +323,52 @@ public ResponseEntity<String> CheckExamen(HttpServletRequest request, HttpServle
         int count = new ReponsesExamen().nombreAccepte(idQuestion);
         return ResponseEntity.ok(count);
     }
+    
+        /*@PostMapping("/updateReponseLibre")
+    public ResponseEntity<String> updateReponseLibre(@RequestParam("idQuestion") int idQuestion,@RequestParam("reponselibre") String reponselibre) throws Exception {
+
+         ReponsesApprenant rep=new ReponsesApprenant();
+        rep.updateReponseLibre(idQuestion,reponselibre);
+
+        return ResponseEntity.ok("Phrase modifié avec succès");
+
+    }*/
+    
+    // Contrôleur pour mettre à jour une réponse
+@PostMapping("/updateReponseLibre")
+public ResponseEntity<String> updateReponseLibre(
+    @RequestParam("idQuestion") int idQuestion,
+    @RequestParam("reponselibre") String reponselibre
+) {
+    try {
+        ReponsesApprenant rep = new ReponsesApprenant();
+        rep.updateReponseLibre(idQuestion, reponselibre);
+        return ResponseEntity.ok("Phrase modifiée avec succès");
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur de mise à jour de la réponse");
+    }
+}
+
+// Contrôleur pour insérer une réponse libre
+@PostMapping("/PasserExamenReponseLibre")
+public ResponseEntity<String> PasserExamenReponseLibre(
+    @RequestParam("token") String token,
+    @RequestParam("idExamen") int idExamen,
+    @RequestParam("idQuestion") int idQuestion,
+    @RequestParam("reponselibre") String reponselibre
+) {
+    try {
+        Apprenant apprenant = FonctionBase.selectWithTokenConnecter(token);
+        if (apprenant == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token invalide");
+        }
+
+        ReponsesApprenant Qu = new ReponsesApprenant();
+        Qu.insertReponseLibre(idExamen, apprenant.getIdApprenant(), idQuestion, reponselibre);
+        return ResponseEntity.ok("Réponse envoyée avec succès.");
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'insertion de la réponse");
+    }
+}
+
 }

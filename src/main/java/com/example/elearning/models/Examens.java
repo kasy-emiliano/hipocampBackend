@@ -264,9 +264,12 @@ public class Examens {
             connection = connect();
             statement = connection.createStatement();
             resultSet = statement.executeQuery(sql);
-            while (resultSet.next()) {
-                rep = new Examens(resultSet.getInt(1), resultSet.getString(2), resultSet.getTimestamp(3), resultSet.getTimestamp(4));
-            }
+             if (resultSet.next()) { // Changement de while en if car un seul résultat est attendu
+            rep = new Examens(resultSet.getInt("idExamen"), 
+                                  resultSet.getString("titreexamen"),
+                                  resultSet.getTimestamp("datedebutexamen"), 
+                                  resultSet.getTimestamp("datefinexamen"));
+        }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -413,5 +416,6 @@ public class Examens {
             }
         }
     }
+     
 
 }

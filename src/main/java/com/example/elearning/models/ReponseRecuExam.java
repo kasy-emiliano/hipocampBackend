@@ -6,17 +6,29 @@ public class ReponseRecuExam {
     private String text;
     private boolean checked;
     private String note;
+    private double typeReponses;
+
+    public Double getTypeReponses() {
+        return typeReponses;
+    }
+
+    public void setTypeReponses(Double typeReponses) {
+        this.typeReponses = typeReponses;
+    }
 
 
     public ReponseRecuExam() {
     }
 
-    public ReponseRecuExam(Long id, String texte, String note, boolean isChecked) {
+    public ReponseRecuExam(Long id, String text, boolean checked, String note, double typeReponses) {
         this.id = id;
-        this.text = texte;
+        this.text = text;
+        this.checked = checked;
         this.note = note;
-        this.checked = isChecked;
+        this.typeReponses = typeReponses;
     }
+
+     
 
     public Long getId() {
         return id;

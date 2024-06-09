@@ -810,6 +810,7 @@ idReponse serial primary key,
 idQuestion int,
 Reponse Text,
 note double precision,
+typeReponses double precision,
 FOREIGN KEY (idQuestion) REFERENCES QuestionExamen(idQuestion)
 );
 
@@ -823,14 +824,22 @@ VALUES ('Vary', 51, 0),
 create table ReponsesApprenant(
 idReponseApprenant serial primary key,
 idExamen int,
+idQuestion int,
 idApprenant int,
 idReponse int,
+reponseLibre text,
 FOREIGN KEY (idExamen) REFERENCES Examens(idExamen),
 FOREIGN KEY (idApprenant) REFERENCES Apprenant(idApprenant),
-FOREIGN KEY (idReponse) REFERENCES ReponsesExamen(idReponse)
+FOREIGN KEY (idReponse) REFERENCES ReponsesExamen(idReponse),
+FOREIGN KEY (idQuestion) REFERENCES QuestionExamen(idQuestion)
 );
 
-insert into ReponsesApprenant(idExamen,idApprenant,idReponse)values(12,3,115);(12,3,109);  
+insert into ReponsesApprenant(idExamen,idApprenant,idReponse,)values(12,3,115);(12,3,109);  
+
+SELECT ReponsesExamen.idreponse, ReponsesExamen.idquestion, ReponsesExamen.reponse, ReponsesExamen.note
+FROM ReponsesExamen
+JOIN QuestionExamen ON ReponsesExamen.idquestion = QuestionExamen.idQuestion
+WHERE QuestionExamen.idExamen = 69;
 
 /**create Table Questions_Examen(
 idExamen int,
@@ -889,7 +898,8 @@ CREATE or replace VIEW QuestionReponse AS
     q.idExamen as idExamen,
     r.idReponse AS idResponse,
     r.Reponse AS response,
-    r.note AS note
+    r.note AS note,
+    r.typeReponses
 FROM
     QuestionExamen q
 LEFT JOIN

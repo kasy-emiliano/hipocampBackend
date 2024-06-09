@@ -20,6 +20,16 @@ public class QuestionReponse {
     private int response_id;
     private String response_text;
     private double response_note;
+       private double typeReponses;
+
+    public double getTypeReponses() {
+        return typeReponses;
+    }
+
+    public void setTypeReponses(double typeReponses) {
+        this.typeReponses = typeReponses;
+    }
+
      private List<ReponsesExamen> responses; // Liste des réponses associées à la question
     public List<ReponsesExamen> getResponses() {
         return responses;
@@ -130,6 +140,7 @@ public class QuestionReponse {
             response.setIdReponse(result.getInt("idResponse"));
             response.setReponse(result.getString("response"));
             response.setNote(result.getDouble("note"));
+            response.setTypeReponses(result.getDouble("typeReponses"));
             question.getResponses().add(response);
             }
         } catch (Exception e) {
