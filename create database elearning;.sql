@@ -957,7 +957,7 @@ FOREIGN KEY (idExamen) REFERENCES examens(idExamen)
 
 
 /*****peut etre liste*****/
-SELECT SUM(note) AS noteApprenant,idApprenant,nom,prenom,idFormateur,NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,DateExamen,phraseCertificat FROM ResultatExamen WHERE idformation=20 GROUP BY idApprenant,nom,prenom,idformateur, NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,DateExamen,phraseCertificat HAVING SUM(note) >= (SELECT SUM(note) / 2 AS noteExam FROM totalNoteExam );
+SELECT SUM(note) AS noteApprenant,idApprenant,nom,prenom,idFormateur,NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,datedebutexamen,phraseCertificat FROM ResultatExamen WHERE idformation=40 GROUP BY idApprenant,nom,prenom,idformateur, NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,datedebutexamen,phraseCertificat HAVING SUM(note) >= (SELECT SUM(note) / 2 AS noteExam FROM totalNoteExam );
 
 create table page(
     idpage serial primary key,
@@ -1241,35 +1241,38 @@ elearning=# select*from reponsesexamen;
 
 idreponse | note
 -----------+------
-       232 |    0
-       231 |    0
-       230 |    3
-       229 |    0
-       228 |    0
-       227 |    0
-       226 |    2
-       225 |    0
-       224 |    0
-       223 |    0
-       222 |    3
-       221 |    0
-       220 |    0
-       219 |    0
-       218 |    3
-       217 |    0
+       265 |    2
+       171 |    1
+       172 |    1
+       173 |    1
+       177 |    0
+       180 |    3
+       183 |    1
+       184 |    1
+       185 |    1
  
 elearning=# select*from reponsesapprenant;
  idreponseapprenant | idexamen | idapprenant | idreponse
 --------------------+----------+-------------+-----------
 (0 rows)
 ************Marina jiaby**************
-insert into reponsesapprenant(idexamen,idapprenant,idreponse) values(70,12,191),(70,12,196),(70,12,198),(70,12,203);
+insert into reponsesapprenant(idexamen,idapprenant,idreponse) values (69,21,171),(69,21,172),(69,21,173),(69,21,176),(69,21,180),(69,21,183),(69,21,184),(69,21,185);
 ****************************************
 insert into reponsesapprenant(idexamen,idapprenant,idreponse) values(68,23,149),(68,23,153),(68,23,155),(68,23,170),(68,23,162),(68,23,165),(68,23,166),(68,23,170);
 
+**********admisListe***************
 
- SELECT SUM(note) AS noteApprenant,idApprenant,nom,prenom,idFormateur,NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,datedebutexamen,phraseCertificat FROM ResultatExamen WHERE idExamen =69   GROUP BY idApprenant,nom,prenom,idformateur, NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,datedebutexamen,phraseCertificat HAVING SUM(note) <= (SELECT SUM(note) / 2 AS noteExam FROM totalNoteExam WHERE idExamen =69);
 
+
+
+
+ 
+
+ /************************Admis indivduel**********************************************/
+  SELECT SUM(note) AS noteApprenant,idApprenant,idExamen,idFormation,nom,prenom FROM ResultatExamen WHERE idExamen =69 and idapprenant=12  GROUP BY idApprenant,idExamen,idFormation,nom,prenom HAVING SUM(note) >= (SELECT SUM(note) / 2 AS noteExam FROM totalNoteExam WHERE idExamen =69);
+
+******NONAdmis indivduel**********
+SELECT SUM(note) AS noteApprenant,idApprenant,idExamen,idFormation FROM ResultatExamen WHERE idExamen =69 and idapprenant=14  GROUP BY idApprenant,idExamen,idFormation HAVING SUM(note) <= (SELECT SUM(note) / 2 AS noteExam FROM totalNoteExam WHERE idExamen =69);
 
  WITH 
 totalInscrits AS (
@@ -1303,10 +1306,10 @@ FROM
 
 WITH totalInscrits AS (
     SELECT idformation, COUNT(*) AS totalInscrits
-    FROM inscritformation
+    FROM    
     GROUP BY idformation
-),
-totalAdmis AS (
+)
+with totalAdmis AS (
     SELECT re.idformation, COUNT(DISTINCT re.idApprenant) AS totalAdmis
     FROM resultatexamen re
     JOIN Examens ex ON re.idExamen = ex.idExamen
@@ -1314,21 +1317,178 @@ totalAdmis AS (
     HAVING SUM(re.note) >= (
         SELECT SUM(note) / 2
         FROM resultatexamen
-        WHERE idformation = re.idformation
-
-    
+        WHERE idformation = re.idformation 
     )
 )
+with totalNonAdmis AS (
+    SELECT re.idformation, COUNT(DISTINCT re.idApprenant) AS nonAdmis
+    FROM resultatexamen re
+    JOIN Examens ex ON re.idExamen = ex.idExamen
+    GROUP BY re.idformation
+    HAVING SUM(re.note) <= (
+        SELECT SUM(note) / 2
+        FROM resultatexamen
+        WHERE idformation = re.idformation
+    )
+)
+
 SELECT 
     f.idformation, 
     f.titre,
-    COALESCE((ta.totalAdmis::float / ti.totalInscrits::float) * 100, 0) AS tauxReussite
+    COALESCE((na.totalNonAdmis::float - ta.totalAdmis::float) * 100, 0) AS tauxReussite
 FROM formation f
 LEFT JOIN totalInscrits ti ON f.idformation = ti.idformation
+LEFT JOIN totalNonAdmis na ON f.idformation = na.idformation
 LEFT JOIN totalAdmis ta ON f.idformation = ta.idformation
+
 where idformateur=10
 ORDER BY tauxReussite DESC;
 
+LEFT JOIN totalInscrits ti ON f.idformation = ti.idformation
 
 SELECT SUM(note) AS noteApprenant,idApprenant,nom,prenom,idFormateur,
     NomFormateur,PrenomFormateur,nomorgannisme,idExamen,idFormation,TitreFormation,datedebutexamen,phraseCertificat FROM ResultatExamen WHERE idformation = 44 GROUP BY idApprenant, nom, prenom, idformateur, NomFormateur, PrenomFormateur, nomorgannisme, idExamen, idFormation, TitreFormation, datedebutexamen, phraseCertificat HAVING SUM(note) >= (SELECT SUM(note) / 2 FROM totalNoteExam WHERE idExamen = 69) ORDER BY noteApprenant DESC;
+
+ 
+ 
+ 
+/**************note*****************/
+
+create or replace view totalNoteExamFormation as
+SELECT
+    tne.idreponse,
+    tne.reponse,
+    tne.idquestion,
+    tne.note,
+    tne.idexamen,
+    tne.idtypequestion,
+    tne.question,
+    e.idformation,
+    e.titreexamen,
+    e.datedebutexamen,
+    e.datefinexamen
+FROM
+    totalNoteExam tne
+JOIN
+    examens e ON tne.idexamen = e.idexamen;
+
+
+
+ 
+
+    8888888888888888888888*********yessssssss tena izy**********
+
+
+
+    -- CTE pour la note nécessaire pour être admis
+-- Calcul du total des inscrits par formation
+-- Calcul du total des inscrits par formation
+WITH totalInscrits AS (
+    SELECT 
+        i.idformation,
+        COUNT(DISTINCT i.idApprenant) AS total
+    FROM 
+        inscritformation i
+    GROUP BY 
+        i.idformation
+),
+ 
+examSeuils AS (
+    SELECT 
+        tnf.idformation,
+        tnf.idExamen,
+        SUM(tnf.note) / 2 AS seuil
+    FROM 
+        totalNoteExamFormation tnf
+    GROUP BY 
+        tnf.idformation,
+        tnf.idExamen
+),
+ 
+examResults AS (
+    SELECT 
+        re.idformation,
+        re.idExamen,
+        re.idApprenant,
+        SUM(re.note) AS totalNote
+    FROM 
+        resultatexamen re
+    GROUP BY 
+        re.idformation,
+        re.idExamen,
+        re.idApprenant
+),
+ 
+totalAdmis AS (
+    SELECT 
+        re.idformation,
+        re.idExamen,
+        COUNT(DISTINCT re.idApprenant) AS total
+    FROM 
+        examResults re
+    JOIN examSeuils es ON re.idformation = es.idformation AND re.idExamen = es.idExamen
+    WHERE 
+        re.totalNote >= es.seuil
+    GROUP BY 
+        re.idformation,
+        re.idExamen
+),
+ 
+totalFailed AS (
+    SELECT 
+        re.idformation,
+        re.idExamen,
+        COUNT(DISTINCT re.idApprenant) AS total
+    FROM 
+        examResults re
+    JOIN examSeuils es ON re.idformation = es.idformation AND re.idExamen = es.idExamen
+    WHERE 
+        re.totalNote < es.seuil
+    GROUP BY 
+        re.idformation,
+        re.idExamen
+),
+ 
+totalNotPassed AS (
+    SELECT 
+        i.idformation,
+        es.idExamen,
+        COUNT(DISTINCT i.idApprenant) AS total
+    FROM 
+        inscritformation i
+    LEFT JOIN examResults er ON i.idApprenant = er.idApprenant AND i.idformation = er.idformation
+    JOIN examSeuils es ON i.idformation = es.idformation
+    WHERE 
+        er.idApprenant IS NULL
+    GROUP BY 
+        i.idformation,
+        es.idExamen
+)
+ 
+SELECT
+    f.idformation,
+    f.titre,
+    es.idExamen,
+    ti.total AS totalInscrits,
+    COALESCE(ta.total, 0) AS Admis,
+    COALESCE(tf.total, 0) + COALESCE(tnp.total, 0) AS NonAdmis,
+    ROUND((COALESCE(ta.total, 0)::numeric / NULLIF(ti.total, 0)::numeric) * 100, 2) AS tauxreussite,
+    ROUND(((COALESCE(tf.total, 0) + COALESCE(tnp.total, 0))::numeric / NULLIF(ti.total, 0)::numeric) * 100, 2) AS pourcentageNonAdmis
+FROM
+    totalInscrits ti
+JOIN
+    examSeuils es ON ti.idformation = es.idformation
+JOIN
+    formation f ON f.idformation = ti.idformation
+LEFT JOIN
+    totalAdmis ta ON es.idExamen = ta.idExamen AND es.idformation = ta.idformation
+LEFT JOIN
+    totalFailed tf ON es.idExamen = tf.idExamen AND es.idformation = tf.idformation
+LEFT JOIN
+    totalNotPassed tnp ON es.idExamen = tnp.idExamen AND es.idformation = tnp.idformation
+WHERE
+    f.idformateur = 10
+ORDER BY
+    f.idformation, es.idExamen;
+
+ 

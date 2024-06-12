@@ -343,6 +343,8 @@ public ResponseEntity<String> updateReponseLibre(
     try {
         ReponsesApprenant rep = new ReponsesApprenant();
         rep.updateReponseLibre(idQuestion, reponselibre);
+        
+        ReponsesExamen.ReponseAccepter(idQuestion);
         return ResponseEntity.ok("Phrase modifiée avec succès");
     } catch (Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur de mise à jour de la réponse");
@@ -362,9 +364,12 @@ public ResponseEntity<String> PasserExamenReponseLibre(
         if (apprenant == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token invalide");
         }
+        ReponsesApprenant Qu = new ReponsesApprenant();  
 
-        ReponsesApprenant Qu = new ReponsesApprenant();
         Qu.insertReponseLibre(idExamen, apprenant.getIdApprenant(), idQuestion, reponselibre);
+        
+        ReponsesExamen.ReponseAccepter(idQuestion);
+        
         return ResponseEntity.ok("Réponse envoyée avec succès.");
     } catch (Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'insertion de la réponse");

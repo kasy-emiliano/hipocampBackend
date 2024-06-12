@@ -822,29 +822,112 @@ public class Formateur {
 
             // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
             String sql ="WITH totalInscrits AS (\n" +
-"    SELECT idformation, COUNT(*) AS totalInscrits\n" +
-"    FROM inscritformation\n" +
-"    GROUP BY idformation\n" +
+"    SELECT \n" +
+"        i.idformation,\n" +
+"        COUNT(DISTINCT i.idApprenant) AS total\n" +
+"    FROM \n" +
+"        inscritformation i\n" +
+"    GROUP BY \n" +
+"        i.idformation\n" +
 "),\n" +
+" \n" +
+"examSeuils AS (\n" +
+"    SELECT \n" +
+"        tnf.idformation,\n" +
+"        tnf.idExamen,\n" +
+"        SUM(tnf.note) / 2 AS seuil\n" +
+"    FROM \n" +
+"        totalNoteExamFormation tnf\n" +
+"    GROUP BY \n" +
+"        tnf.idformation,\n" +
+"        tnf.idExamen\n" +
+"),\n" +
+" \n" +
+"examResults AS (\n" +
+"    SELECT \n" +
+"        re.idformation,\n" +
+"        re.idExamen,\n" +
+"        re.idApprenant,\n" +
+"        SUM(re.note) AS totalNote\n" +
+"    FROM \n" +
+"        resultatexamen re\n" +
+"    GROUP BY \n" +
+"        re.idformation,\n" +
+"        re.idExamen,\n" +
+"        re.idApprenant\n" +
+"),\n" +
+" \n" +
 "totalAdmis AS (\n" +
-"    SELECT re.idformation, COUNT(DISTINCT re.idApprenant) AS totalAdmis\n" +
-"    FROM resultatexamen re\n" +
-"    JOIN Examens ex ON re.idExamen = ex.idExamen\n" +
-"    GROUP BY re.idformation\n" +
-"    HAVING SUM(re.note) >= (\n" +
-"        SELECT SUM(note) / 2\n" +
-"        FROM resultatexamen\n" +
-"        WHERE idformation = re.idformation\n" +
-"    )\n" +
+"    SELECT \n" +
+"        re.idformation,\n" +
+"        re.idExamen,\n" +
+"        COUNT(DISTINCT re.idApprenant) AS total\n" +
+"    FROM \n" +
+"        examResults re\n" +
+"    JOIN examSeuils es ON re.idformation = es.idformation AND re.idExamen = es.idExamen\n" +
+"    WHERE \n" +
+"        re.totalNote >= es.seuil\n" +
+"    GROUP BY \n" +
+"        re.idformation,\n" +
+"        re.idExamen\n" +
+"),\n" +
+" \n" +
+"totalFailed AS (\n" +
+"    SELECT \n" +
+"        re.idformation,\n" +
+"        re.idExamen,\n" +
+"        COUNT(DISTINCT re.idApprenant) AS total\n" +
+"    FROM \n" +
+"        examResults re\n" +
+"    JOIN examSeuils es ON re.idformation = es.idformation AND re.idExamen = es.idExamen\n" +
+"    WHERE \n" +
+"        re.totalNote < es.seuil\n" +
+"    GROUP BY \n" +
+"        re.idformation,\n" +
+"        re.idExamen\n" +
+"),\n" +
+" \n" +
+"totalNotPassed AS (\n" +
+"    SELECT \n" +
+"        i.idformation,\n" +
+"        es.idExamen,\n" +
+"        COUNT(DISTINCT i.idApprenant) AS total\n" +
+"    FROM \n" +
+"        inscritformation i\n" +
+"    LEFT JOIN examResults er ON i.idApprenant = er.idApprenant AND i.idformation = er.idformation\n" +
+"    JOIN examSeuils es ON i.idformation = es.idformation\n" +
+"    WHERE \n" +
+"        er.idApprenant IS NULL\n" +
+"    GROUP BY \n" +
+"        i.idformation,\n" +
+"        es.idExamen\n" +
 ")\n" +
-"SELECT \n" +
-"    f.idformation, \n" +
+" \n" +
+"SELECT\n" +
+"    f.idformation,\n" +
 "    f.titre,\n" +
-"    COALESCE((ta.totalAdmis::float / ti.totalInscrits::float) * 100, 0) AS tauxReussite\n" +
-"FROM formation f\n" +
-"LEFT JOIN totalInscrits ti ON f.idformation = ti.idformation\n" +
-"LEFT JOIN totalAdmis ta ON f.idformation = ta.idformation\n" +
-"where idformateur=?";
+"    es.idExamen,\n" +
+"    ti.total AS totalInscrits,\n" +
+"    COALESCE(ta.total, 0) AS Admis,\n" +
+"    COALESCE(tf.total, 0) + COALESCE(tnp.total, 0) AS NonAdmis,\n" +
+"    ROUND((COALESCE(ta.total, 0)::numeric / NULLIF(ti.total, 0)::numeric) * 100, 2) AS tauxreussite,\n" +
+"    ROUND(((COALESCE(tf.total, 0) + COALESCE(tnp.total, 0))::numeric / NULLIF(ti.total, 0)::numeric) * 100, 2) AS pourcentageNonAdmis\n" +
+"FROM\n" +
+"    totalInscrits ti\n" +
+"JOIN\n" +
+"    examSeuils es ON ti.idformation = es.idformation\n" +
+"JOIN\n" +
+"    formation f ON f.idformation = ti.idformation\n" +
+"LEFT JOIN\n" +
+"    totalAdmis ta ON es.idExamen = ta.idExamen AND es.idformation = ta.idformation\n" +
+"LEFT JOIN\n" +
+"    totalFailed tf ON es.idExamen = tf.idExamen AND es.idformation = tf.idformation\n" +
+"LEFT JOIN\n" +
+"    totalNotPassed tnp ON es.idExamen = tnp.idExamen AND es.idformation = tnp.idformation\n" +
+"WHERE\n" +
+"    f.idformateur = ?\n" +
+"ORDER BY\n" +
+"    f.idformation, es.idExamen;";
             statement = connection.prepareStatement(sql);
             // Paramètres de condition
             statement.setInt(1, idFormateur);

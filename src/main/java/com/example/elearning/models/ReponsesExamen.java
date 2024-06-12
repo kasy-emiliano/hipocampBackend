@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 
 public class ReponsesExamen {
 
@@ -214,8 +215,8 @@ public class ReponsesExamen {
     return count;
 }
 
-public static List<String> reponseLibre(int idExamen) throws Exception {
-        List <String> reponses= new ArrayList<>();
+public static String reponseLibreApprenant(int idQuestion) throws Exception {
+        String reponses="";
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet result = null;
@@ -225,17 +226,15 @@ public static List<String> reponseLibre(int idExamen) throws Exception {
             connection = connect.connect();
 
             // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
-            String sql ="select reponsLibre from ReponsesApprenant where idexamen=?";
+            String sql ="select reponselibre from ReponsesApprenant where idQuestion=?";
             statement = connection.prepareStatement(sql);
             // Paramètres de condition
-            statement.setInt(1, idExamen);
+            statement.setInt(1, idQuestion);
             result = statement.executeQuery();
-
-            while (result.next()) {
-            String reponse = result.getString("reponsLibre");
-            if (reponse != null && !reponse.trim().isEmpty()) { // Vérifier si la réponse n'est ni null ni vide
-                reponses.add(reponse);
-            }
+            
+            if (result.next()) {
+             reponses = result.getString("reponselibre");
+            
         }
         } catch (Exception e) {
             throw e;
@@ -253,5 +252,152 @@ public static List<String> reponseLibre(int idExamen) throws Exception {
         return reponses;
     }
 
+public static String reponseLibreExam(int idQuestion) throws Exception {
+        String reponses="";
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+
+        try {
+            FonctionBase connect = new FonctionBase();
+            connection = connect.connect();
+
+            // Modifiez la requête en fonction des conditions que vous souhaitez appliquer
+            String sql ="select reponse from reponsesexamen where idquestion=?";
+            statement = connection.prepareStatement(sql);
+            // Paramètres de condition
+            statement.setInt(1, idQuestion);
+            result = statement.executeQuery();
+            
+            if (result.next()) {
+             reponses = result.getString("reponse");
+            
+        }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return reponses;
+    }
+
+public int idReponseIlaina(int idquetion) throws Exception {
+    int idreponses = 0;
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet result = null;
+
+    try {
+        FonctionBase connect = new FonctionBase();
+        connection = connect.connect();
+
+        String query = "select idreponse from reponsesexamen where idquestion=?";
+        statement = connection.prepareStatement(query);
+        statement.setInt(1, idquetion);
+        result = statement.executeQuery();
+
+        if (result.next()) {
+            idreponses = result.getInt("idreponse");
+        }
+    } catch (Exception e) {
+        throw e;
+    } finally {
+        if (result != null) {
+            result.close();
+        }
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
+    }
+    return idreponses;
+}
+
+ 
+
+ public void updateIdReponse(int idQuestion,int idReponses) throws Exception {
+    Connection connection = null;
+    PreparedStatement statement = null;
+
+    try {
+        FonctionBase connect = new FonctionBase();
+        connection = connect.connect();
+        
+        // Requête paramétrée avec des ?
+        String query = "update reponsesapprenant set idreponse=? where idquestion=?";
+        
+        // Création du PreparedStatement
+        statement = connection.prepareStatement(query);
+        
+        // Assignation des valeurs aux paramètres
+        statement.setInt(1, idReponses);
+        statement.setInt(2, idQuestion);
+        
+        // Exécution de la mise à jour
+        statement.executeUpdate();
+    } catch (Exception ex) {
+        throw ex;
+    } finally {
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
+    }
+}
+
+
+    public static void ReponseAccepter(int idQuestion) throws Exception {
+        
+        String reponseExamen = ReponsesExamen.reponseLibreExam(idQuestion); // Chaîne attendue de l'examen.
+        String reponseLibreApprenat = ReponsesExamen.reponseLibreApprenant(idQuestion);
+        // Convertir les chaînes en minuscules pour une comparaison insensible à la casse.
+ 
+        reponseExamen = reponseExamen.toLowerCase().replaceAll("[,.'!?]"," ");
+        reponseLibreApprenat = reponseLibreApprenat.toLowerCase().replaceAll("[,.'!?]"," ");
+
+        // Convertissez les deux chaînes en tableaux de mots.
+        String[] motsExamen = reponseExamen.split("\\s+"); // S'occupe de la virgule et des espaces.
+        String[] motsLibre = reponseLibreApprenat.split("\\s+"); // S'occupe des espaces.
+
+        // Utilisez des ensembles pour éviter les doublons et faciliter la vérification de la présence.
+        Set<String> motsExamenSet = new HashSet<>(Arrays.asList(motsExamen));
+        Set<String> motsLibreSet = new HashSet<>(Arrays.asList(motsLibre));
+
+        // Comptez le nombre de mots pertinents dans la réponse libre.
+        int motsPertinentsCount = 0;
+        for (String mot : motsExamenSet) {
+            if (motsLibreSet.contains(mot)) {
+                motsPertinentsCount++;
+            }
+        }
+        // Calculez le pourcentage des mots pertinents.
+        double pourcentage = (double) motsPertinentsCount / motsExamenSet.size() * 100;
+
+        // Vérifiez si le pourcentage est supérieur ou égal à 75%.
+        if (pourcentage >= 75) {
+             ReponsesExamen rep= new ReponsesExamen();
+             
+              int idreponse=rep.idReponseIlaina(idQuestion);
+              
+              rep.updateIdReponse(idQuestion,idreponse);
+          
+            System.out.println("reponse accepter, la mise à jour de la base de données est à effectuer.");
+        } else {
+            System.out.println("La reponse ne contient pas au moins 75% des mots de la vrai reponse .");
+        }
+    }
+
+}
      
- }

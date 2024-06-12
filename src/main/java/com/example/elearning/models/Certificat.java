@@ -29,6 +29,7 @@ public class Certificat {
     double totalinscrits;
     double admis;
     double nonadmis;
+ 
 
     public double getTotalinscrits() {
         return totalinscrits;
