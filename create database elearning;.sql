@@ -1256,12 +1256,20 @@ elearning=# select*from reponsesapprenant;
 --------------------+----------+-------------+-----------
 (0 rows)
 ************Marina jiaby**************
-insert into reponsesapprenant(idexamen,idapprenant,idreponse) values (69,21,171),(69,21,172),(69,21,173),(69,21,176),(69,21,180),(69,21,183),(69,21,184),(69,21,185);
+insert into reponsesapprenant(idexamen,idapprenant,idreponse) values (68,31,149),(68,31,153),(68,31,155),(68,31,160),(68,31,162);
 ****************************************
 insert into reponsesapprenant(idexamen,idapprenant,idreponse) values(68,23,149),(68,23,153),(68,23,155),(68,23,170),(68,23,162),(68,23,165),(68,23,166),(68,23,170);
 
 **********admisListe***************
 
+valiny marina pour question 
+exam 68
+66=149
+67=153
+68=155
+69=160
+70=162,165
+71=167,169
 
 
 
@@ -1492,3 +1500,47 @@ ORDER BY
     f.idformation, es.idExamen;
 
  
+Quelles phases sont typiquement incluses dans le cycle de vie d'un projet ?
+
+Planification
+Exécution
+Recherche et développement
+Vente
+Réponses correctes : 1 et 2
+
+Question 2 : Gestion des Risques
+Quels sont des exemples de stratégies pour gérer les risques dans un projet ?
+
+Éviter le risque
+Transférer le risque
+Ignorer le risque
+Minimiser les coûts
+Réponses correctes : 1 et 2
+
+Question 3 : Outils de Gestion
+Quels outils sont couramment utilisés pour la gestion de projet ?
+
+Diagramme de Gantt
+Analyse SWOT
+Microsoft Excel
+Brainstorming
+
+Réponses correctes : 1 et 3
+
+
+Qu'est-ce que la gestion stratégique
+
+Vision
+Mission
+Objectifs à long terme
+Analyse SWOT
+ 
+Réponse Attendue: La gestion stratégique implique la définition de la vision et de la mission de l'entreprise, l'établissement d'objectifs à long terme, l'analyse SWOT pour identifier les forces.
+
+ 
+           8 | TiaVarotra                              | uploads/vente.jpg          | tiavarotra@gmail.com               | 034563127    | 2024-06-04 12:56:00 | 2024-06-06 12:57:00 |            5000 | Apprentissage en vente en ligne  | <p>La vente en ligne est une forme de commerce moderne qui permet aux consommateurs d'acheter des biens et services via Internet</p>  | https://www.facebook.com/hippocampacademy
+           9 | Comme unique                            | uploads/comm.jpg           | commeunique@gmail.com              | 0341536978   | 2024-06-04 13:13:00 | 2024-06-06 13:13:00 |            5000 | Formation en communication       | <p>La communication est le processus d'Úchange d'informations, d'idÚes, de sentiments et de pensÚes entre individus ou groupes.</p>   | https://www.facebook.com/hippocampacademy
+         
+Bonjour Monsieur l'examen sur la gestion projet c'est quand? 
+
+         La date sera publié bientôt 

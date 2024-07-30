@@ -12,7 +12,7 @@ public class FonctionBase {
  
     public static Connection connect() throws Exception {
         //String url = "jdbc:postgresql://viaduct.proxy.rlwy.net:22481/railway?user=postgres&password=FvTnwpWTOuaEndgtUWXRexgzTQVASbru&charSet=UTF-8";
-        String url = "jdbc:postgresql://localhost:5432/elearning?user=postgres&password=cedric10&charSet=UTF-8";
+        String url = "jdbc:postgresql://database-1.c8gnqh5bps6l.us-west-2.rds.amazonaws.com:5432/database-1?user=postgres&password=2Y.~}pdDttqTPfkdunQhp%OhGYIb&charSet=UTF-8";
 
         Connection connection;
         connection = DriverManager.getConnection(url);
