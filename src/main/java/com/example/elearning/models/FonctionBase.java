@@ -8,18 +8,26 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 public class FonctionBase {
  
-    public static Connection connect() throws Exception {
-        //String url = "jdbc:postgresql://viaduct.proxy.rlwy.net:22481/railway?user=postgres&password=FvTnwpWTOuaEndgtUWXRexgzTQVASbru&charSet=UTF-8";
-        String url = "jdbc:postgresql://database-1.c8gnqh5bps6l.us-west-2.rds.amazonaws.com:5432/database-1?user=postgres&password=2Y.~}pdDttqTPfkdunQhp%OhGYIb&charSet=UTF-8";
+public static Connection connect() throws Exception {
+        String user = "postgres";
+        String password = "2Y.~}pdDttqTPfkdunQhp%OhGYIb";
+        String encodedPassword = URLEncoder.encode(password, StandardCharsets.UTF_8.toString());
+
+        String url = "jdbc:postgresql://database-1.c8gnqh5bps6l.us-west-2.rds.amazonaws.com:5432/postgres?user=" + user + "&password=" + encodedPassword;
 
         Connection connection;
-        connection = DriverManager.getConnection(url);
-        connection.setAutoCommit(true);
+        try {
+            connection = DriverManager.getConnection(url);
+            connection.setAutoCommit(true);
+        } catch (SQLException e) {
+            throw new SQLException("Connection failed: " + e.getMessage(), e);
+        }
         return connection;
     }
-
  public static void closeConnection(Connection connection) throws Exception {
         try {
             if (connection != null) {
